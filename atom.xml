@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title><![CDATA[Roger's blog]]></title>
+  <title><![CDATA[遥远的小村庄]]></title>
   <subtitle><![CDATA[仰望星空，脚踏实地]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://yoursite.com/"/>
-  <updated>2014-10-26T13:22:20.209Z</updated>
+  <updated>2014-10-26T13:40:14.350Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
