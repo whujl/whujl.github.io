@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><![CDATA[Roger's blog]]></title>
+  <subtitle><![CDATA[仰望星空，脚踏实地]]></subtitle>
+  <link href="/atom.xml" rel="self"/>
+  <link href="http://yoursite.com/"/>
+  <updated>2014-10-26T13:15:32.276Z</updated>
+  <id>http://yoursite.com/</id>
+  
+  <author>
+    <name><![CDATA[Jiao Long]]></name>
+    <email><![CDATA[whuroger@gmail.com]]></email>
+  </author>
+  
+  <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[抽象语法树]]></title>
+    <link href="http://yoursite.com/2014/10/26/my-new-post/"/>
+    <id>http://yoursite.com/2014/10/26/my-new-post/</id>
+    <published>2014-10-26T12:11:39.000Z</published>
+    <updated>2014-10-26T12:49:54.000Z</updated>
+    <content type="html"><![CDATA[<p>Abstract Syntax Tree</p>
+<h3 id="The_Abstract_Syntax_Tree">The Abstract Syntax Tree</h3>
+<p><strong>抽象语法树</strong>是Eclipse处理源代码的方式，每一个Java源文件都可以用AST的节点来表示。这些节点都是ASTNode的子类。每一个子类都代表Java语言中的一个element。例如：MethodDeclaration是用来描述方法声明的节点，VariableDeclarationFragment用来描述变量声明。一个频繁使用的node是<strong>SimpleName</strong>,SimpleName是Java源代码中的除了<strong>关键词</strong>、<strong>布尔表达式</strong>或者<strong>null</strong>外的任何一个字符串。</p>
+<p>所有与AST相关的类都位于org.eclipse.jdt.core.dom包中。</p>
+<h3 id="Parsing_source_code">Parsing source code</h3>
+<p><strong>ASTParser</strong>将Java代码解析为AST，它即可以解析整个Java文件也可以包括部分Java代码。</p>
+<a id="more"></a>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">protected</span> CompilationUnit <span class="title">parse</span>(ICompilationUnit unit){</div><div class="line">    ASTParser parser = ASTParser.newParser(AST.JLS3);</div><div class="line">    parser.setKind(ASTParser.K_COMPILATION_UNIT);</div><div class="line">	parser.setSource(unit); <span class="comment">// set source</span></div><div class="line">	parser.setResolveBindings(<span class="keyword">true</span>); <span class="comment">// we need bindings later on</span></div><div class="line">	<span class="keyword">return</span> (CompilationUnit) parser.createAST(<span class="keyword">null</span> <span class="comment">/* IProgressMonitor */</span>);      <span class="comment">// parse</span></div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>通过<strong>ASTParser.newParser(AST.JLS3)</strong>,我们让解析器通过Java语言标准第三版来解析代码。<br><strong>parser.setKind(ASTParser.K_COMPILATION_UNIT)</strong>告诉解析器需要解析ICompilationUnit,ICompilation是一个Java文件。</p>
+<h3 id="Java_Model">Java Model</h3>
+<p>Java Model将一个Java项目展示为一种树形结构，展示为大家都知道的”Package Explorer”视图：<br><img src="http://www.eclipse.org/articles/Article-JavaCodeManipulation_AST/images/java-model-overview.png" alt="Alt text"></p>
+<figure class="highlight Java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();</div><div class="line">IProject project = root.getProject(<span class="string">"someJavaProject"</span>);</div><div class="line">project.open(<span class="keyword">null</span> <span class="comment">/* IProgressMonitor */</span>);</div><div class="line">		</div><div class="line">IJavaProject javaProject = JavaCore.create(project);</div><div class="line">IType lwType = javaProject.findType(<span class="string">"net.sourceforge.earticleast.app.Activator"</span>);</div><div class="line">ICompilationUnit lwCompilationUnit = lwType.getCompilationUnit();</div></pre></td></tr></table></figure>
+
+<h3 id="How_to_find_an_AST_node">How to find an AST node</h3>
+<p>即使是一个简单地“Hello World”的项目经过解析生成的AST也是非常的复杂的。那么这时如何拿到<em>println(“Hello World”)</em>?扫描所有的节点是可以做到的，但是并不方便。</p>
+<p>更好的解决方案是：每一个<strong>ASTNode</strong>允许经过一个<strong>visitor</strong>查询子节点(<a href="http://en.wikipedia.org/wiki/Visitor_pattern" target="_blank" rel="external">visitor pattern</a>)。每一个<strong>ASTNode</strong>子类都有两个方法：visit()、endVisit()。<strong>ASTNode</strong>上定义了两个方法：preVisit(ASTNode node)和postVisit(ASTNode node).</p>
+<figure class="highlight Java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">visit</span>(VariableDeclarationStatement node){</div><div class="line">    <span class="keyword">for</span>(Iterator iter = node.fragments().iterator();iter.hasNext();){</div><div class="line">        VariableDeclarationFragment fragment = (VariableDeclarationFragment) iter.next();</div><div class="line">        <span class="comment">//... store these fragments somewhere</span></div><div class="line">    }</div><div class="line">    <span class="keyword">return</span> <span class="keyword">false</span>; <span class="comment">// prevent that SimpleName is interpreted as reference</span></div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>当visit()返回false时，subtree的访问节点都不被考虑。</p>
+<h3 id="Objtaining_Information_from_an_AST_Node">Objtaining Information from an AST Node</h3>
+<p>每一个<strong>ASTNode</strong>的子类都含有它代表的Java元素的详细信息。例如，一个<em>MethodDeclaration</em>将会含有方法的名字，返回类型，参数等信息。一个节点的信息被称为<em>structural properties</em>。</p>
+<p>对于下面的方法而言：</p>
+<figure class="highlight Java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span>(BundleContext context) <span class="keyword">throws</span> Exception {</div><div class="line">    <span class="keyword">super</span>.start(context);</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>下面的图表示它的结构化的属性：<br><img src="http://www.eclipse.org/articles/Article-JavaCodeManipulation_AST/images/md-astview.png" alt="Alt text"></p>
+<p>可以通过静态方法或者泛型方法得到节点的结构化属性：</p>
+<ul>
+<li>static methods: 每个节点都共有的方法去访问它们的属性：例如getName(), exceptions(), 等等。</li>
+<li>generic method: 使用<em>getStructuralProperty(StructuralPropertyDescriptor property)</em>方法拿到节点属性值。每一个AST的子类都定义了一系列的<strong>StructuralPropertyDescriptor</strong>, <strong>StructuralPropertyDescriptor</strong>都可以直接通过它们属于的类访问。</li>
+</ul>
+<p><strong>Sructural Properties</strong>分为三种不同的类型：</p>
+<ul>
+<li>properties that hold simple values</li>
+<li>properties which contain a single child AST node</li>
+<li>properties which contain a list of child AST nodes.</li>
+</ul>
+<h2 id="Bindings">Bindings</h2>
+<h2 id="Error_Recovery">Error Recovery</h2>
+<p>从Eclipse3.2以后，AST/DOM支持从错误的语法中恢复代码，如果需要使用这个属性，你需要使用ASTParser#setStatementsRecovery(). 正如它的名字所说，错误恢复是在声明级别完成的。错误恢复并不能应用于所有的语法错误，对于简单地忘记分号却已经不再是问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span>(String[] args) {</div><div class="line">	System.out.print(<span class="string">"Hello"</span>);</div><div class="line">	System.out.print(<span class="string">", "</span>)</div><div class="line">	System.out.println(<span class="string">"World!"</span>);</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>对于上面的代码，在Eclipse3.2以前，这个方法体将会是空的，现在可以通过错误恢复有可能能够拿到那些方法调用。</p>
+<h2 id="How_to_Apply_Changes">How to Apply Changes</h2>
+<h2 id="Write_it_down">Write it down</h2>
+<p>当你使用ASTRewrite或者直接更改树的节点，这些改动将被重新写回Java源文件，因此一个TextEdit对象将会被创建，这时代码将会离开AST的环境，而进入一个基本文本的环境。<strong>TextEdit</strong>对象含有基于字符的更改信息，它是<em>org.eclipse.text</em>插件的一部分。</p>
+<p>可以通过以下两种不同的方式获取<strong>TextEdit</strong>对象：</p>
+<ul>
+<li>如果使用ASTRewrite,请求<em>ASTRewrite</em>的实例调用<em>rewriteAST(IDocument, Map)</em>方法获取<strong>TextEdit</strong>对象。</li>
+<li><p>如果直接修改AST节点，<strong>TextEdit</strong>对象通过<em>CompilationUnit</em>的rewrite(IDocument document, Map options)获得。<br>对于<em>rewrite(IDocument document, Map options)</em>方法，第一个参数<em>document</em>包含了需要被修改的源代码，第二个参数是一个关于源代码格式化可选项的映射，传null就是使用默认的选项。</p>
+</li>
+<li><p>当需要解析的源代码是一个char[]时，或者IDocument对象很容易，创建一个*org.eclipse.jface.text.Document对象，并且将这个char[]数组作为构造器参数传入。</p>
+</li>
+<li>当需要解析的源代码是Java源文件时，你不能直接写入到这个文件，因为你有可能不是唯一操作这个源文件的编辑器。对于Eclipse，Java编辑器并不是直接写至源文件，而是使用一个拷贝代替。</li>
+</ul>
+<p>下面的代码表示了如何进行写操作：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">ITextFileBufferManager bufferManager = FileBuffers.getTextFileBufferManager(); <span class="comment">// get the buffer manager</span></div><div class="line">IPath path = unit.getJavaElement().getPath(); <span class="comment">// unit: instance of CompilationUnit</span></div><div class="line"><span class="keyword">try</span> {</div><div class="line">	bufferManager.connect(path, <span class="keyword">null</span>); <span class="comment">// (1)</span></div><div class="line">	ITextFileBuffer textFileBuffer = bufferManager.getTextFileBuffer(path);</div><div class="line">	<span class="comment">// retrieve the buffer</span></div><div class="line">	IDocument document = textFileBuffer.getDocument(); (<span class="number">2</span>)</div><div class="line">	<span class="comment">// ... edit the document here ... </span></div><div class="line">	</div><div class="line">  <span class="comment">// commit changes to underlying file</span></div><div class="line">	textFileBuffer</div><div class="line">		.commit(<span class="keyword">null</span> <span class="comment">/* ProgressMonitor */</span>, <span class="keyword">false</span> <span class="comment">/* Overwrite */</span>); <span class="comment">// (3)</span></div><div class="line"></div><div class="line">} <span class="keyword">finally</span> {</div><div class="line">	bufferManager.disconnect(path, <span class="keyword">null</span>); <span class="comment">// (4)</span></div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h3 id="Managing_Comments">Managing Comments</h3>
+<p>修改AST中一个最困难的就是处理comment.<strong>CompilationUnit#getCommentList()</strong>方法可以返回comments的集合，但是这个集合不能被修改，这意味着即使AST Rewriter往一个可编译单元中添加了一个comment，新的comment也无法出现在这个comment的集合中。</p>
+<p>下面的代码片段可以用来添加comment：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">CompilationUnit astRoot= ... ; <span class="comment">// get the current compilation unit</span></div><div class="line"></div><div class="line">ASTRewrite rewrite= ASTRewrite.create(astRoot.getAST());</div><div class="line">Block block= ((TypeDeclaration) astRoot.types().get(<span class="number">0</span>)).getMethods()[<span class="number">0</span>].getBody();</div><div class="line">ListRewrite listRewrite= rewrite.getListRewrite(block, Block.STATEMENTS_PROPERTY);</div><div class="line">Statement placeHolder= rewrite.createStringPlaceholder(<span class="string">"//mycomment"</span>, ASTNode.EMPTY_STATEMENT);</div><div class="line">listRewrite.insertFirst(placeHolder, <span class="keyword">null</span>);</div><div class="line"></div><div class="line">textEdits= rewrite.rewriteAST(document, <span class="keyword">null</span>);</div><div class="line">textEdits.apply(document);</div></pre></td></tr></table></figure>
+
+<p>如果comment是javadoc comment，可以使用getJavadoc()方法获得相应的声明。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Abstract Syntax Tree</p>
+<h3 id="The_Abstract_Syntax_Tree">The Abstract Syntax Tree</h3>
+<p><strong>抽象语法树</strong>是Eclipse处理源代码的方式，每一个Java源文件都可以用AST的节点来表示。这些节点都是ASTNode的子类。每一个子类都代表Java语言中的一个element。例如：MethodDeclaration是用来描述方法声明的节点，VariableDeclarationFragment用来描述变量声明。一个频繁使用的node是<strong>SimpleName</strong>,SimpleName是Java源代码中的除了<strong>关键词</strong>、<strong>布尔表达式</strong>或者<strong>null</strong>外的任何一个字符串。</p>
+<p>所有与AST相关的类都位于org.eclipse.jdt.core.dom包中。</p>
+<h3 id="Parsing_source_code">Parsing source code</h3>
+<p><strong>ASTParser</strong>将Java代码解析为AST，它即可以解析整个Java文件也可以包括部分Java代码。</p>
+]]>
+    
+    </summary>
+    
+      <category term="AST" scheme="http://yoursite.com/tags/AST/"/>
+    
+      <category term="JAVA" scheme="http://yoursite.com/tags/JAVA/"/>
+    
+      <category term="Eclipse Plugin" scheme="http://yoursite.com/tags/Eclipse-Plugin/"/>
+    
+      <category term="Eclipse Plugin Development" scheme="http://yoursite.com/categories/Eclipse-Plugin-Development/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Hello World]]></title>
+    <link href="http://yoursite.com/2014/10/26/hello-world/"/>
+    <id>http://yoursite.com/2014/10/26/hello-world/</id>
+    <published>2014-10-26T11:48:16.000Z</published>
+    <updated>2014-10-26T11:48:16.000Z</updated>
+    <content type="html"><![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">trobuleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
+<h2 id="Quick_Start">Quick Start</h2>
+<h3 id="Create_a_new_post">Create a new post</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
+
+<p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
+<h3 id="Run_server">Run server</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
+
+<p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
+<h3 id="Generate_static_files">Generate static files</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
+
+<p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
+<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
+
+<p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io]]>
+    </summary>
+    
+  </entry>
+  
+</feed>
