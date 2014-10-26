@@ -66,6 +66,8 @@
 <p>所有与AST相关的类都位于org.eclipse.jdt.core.dom包中。</p>
 <h3 id="Parsing_source_code">Parsing source code</h3>
 <p><strong>ASTParser</strong>将Java代码解析为AST，它即可以解析整个Java文件也可以包括部分Java代码。</p>
+<a id="more"></a>
+
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">protected</span> CompilationUnit <span class="title">parse</span>(ICompilationUnit unit){</div><div class="line">    ASTParser parser = ASTParser.newParser(AST.JLS3);</div><div class="line">    parser.setKind(ASTParser.K_COMPILATION_UNIT);</div><div class="line">	parser.setSource(unit); <span class="comment">// set source</span></div><div class="line">	parser.setResolveBindings(<span class="keyword">true</span>); <span class="comment">// we need bindings later on</span></div><div class="line">	<span class="keyword">return</span> (CompilationUnit) parser.createAST(<span class="keyword">null</span> <span class="comment">/* IProgressMonitor */</span>);      <span class="comment">// parse</span></div><div class="line">}</div></pre></td></tr></table></figure>
 
 <p>通过<strong>ASTParser.newParser(AST.JLS3)</strong>,我们让解析器通过Java语言标准第三版来解析代码。<br><strong>parser.setKind(ASTParser.K_COMPILATION_UNIT)</strong>告诉解析器需要解析ICompilationUnit,ICompilation是一个Java文件。</p>
@@ -165,25 +167,28 @@
 </article>
 
 
-<section id="comment">
-  <h1 class="title">Comments</h1>
+  <div class="ds-thread" data-thread-key="my-new-post/" data-title="抽象语法树" data-url="请替换成文章的网址"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+ <nav id="pagination" >
+    
+    
+    <a href="/2014/10/26/hello-world/" class="alignright next" >Next</a>
+    
+    <div class="clearfix"></div>
+</nav>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"whuroger"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.unstable.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
 
-  
-      <div id="fb-root"></div>
-<script>
-  (function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=123456789012345";
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
-</script>
-
-<div class="fb-comments" data-href="http://yoursite.com/2014/10/26/my-new-post/" data-num-posts="5" data-width="840" data-colorscheme="light"></div>
-      
-  
-</section>
 
 </div></div>
     <aside id="sidebar" class="alignright">
@@ -206,19 +211,20 @@
 
 
   
-<div class="widget tag">
-  <h3 class="title">Tags</h3>
-  <ul class="entry">
-  
-    <li><a href="/tags/AST/">AST</a><small>1</small></li>
-  
-    <li><a href="/tags/Eclipse-Plugin/">Eclipse Plugin</a><small>1</small></li>
-  
-    <li><a href="/tags/JAVA/">JAVA</a><small>1</small></li>
-  
-  </ul>
+<div class="widget tagcloud">
+  <h3 class="title">Tag Cloud</h3>
+  <div class="entry">
+    <a href="/tags/AST/" style="font-size: NaNpx;">AST</a><a href="/tags/Eclipse-Plugin/" style="font-size: NaNpx;">Eclipse Plugin</a><a href="/tags/JAVA/" style="font-size: NaNpx;">JAVA</a>
+  </div>
 </div>
 
+
+  <div class="widget tag">
+<h3 class="title">友情链接</h3>
+<ul class="entry">
+<li><a href="http://zipperary.com/" title="Zippera's Blog">Zippera</a></li>
+</ul>
+</div>
 </aside>
     <div class="clearfix"></div>
   </div>
