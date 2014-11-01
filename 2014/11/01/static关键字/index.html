@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>about | 遥远的小村庄</title>
+  <title>static关键字 | 遥远的小村庄</title>
   <meta name="author" content="Jiao Long">
   
   <meta name="description" content="Roger&#39;s blog | java | iOS | swift">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="about"/>
+  <meta property="og:title" content="static关键字"/>
   <meta property="og:site_name" content="遥远的小村庄"/>
 
   
@@ -59,26 +59,51 @@
 </nav>
 <div class="clearfix"></div></header>
   <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper"><article class="page">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
   
   <div class="post-content">
     <header>
       
+        <div class="icon"></div>
+        <time datetime="2014-11-01T14:27:42.000Z"><a href="/2014/11/01/static关键字/">11月 1 2014</a></time>
+      
       
   
-    <h1 class="title">about</h1>
+    <h1 class="title">static关键字</h1>
   
 
     </header>
     <div class="entry">
       
-        
+        <h3 id="static关键字">static关键字</h3>
+<p>使用static关键字的时机:</p>
+<ul>
+<li>希望没有创建对象就可以使用某个方法。</li>
+<li>无论创建多少对象时，都希望为某个特殊的域(field)分配单一存储空间。</li>
+</ul>
+<p>当声明一个事物是static时，就意味着这个field或function不会与包含它的那个类的任何对象实例关联在一起。所以即使没有创建类的实例，也可以通过访问类的static的field或function.</p>
+<p>使用类名是引用static变量的首选方式：</p>
+<ul>
+<li>强调了这个变量的static属性。</li>
+<li>为编译器优化创造了更好的机会。</li>
+</ul>
+
       
     </div>
     <footer>
       
         
+  
+  <div class="categories">
+    <a href="/categories/Core-Java/">Core Java</a>
+  </div>
+
         
+  
+  <div class="tags">
+    <a href="/tags/java/">java</a>
+  </div>
+
         
   <div class="addthis addthis_toolbox addthis_default_style">
     
@@ -109,6 +134,8 @@
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
  <nav id="pagination" >
     
+    
+    <a href="/2014/10/26/my-new-post/" class="alignright next" >Next</a>
     
     <div class="clearfix"></div>
 </nav>

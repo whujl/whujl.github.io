@@ -23,15 +23,17 @@
   <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
   <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
   
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-56109842-1']);
+  
+  _gaq.push(['_trackPageview']);
 
-  ga('create', 'UA-56109842-1', 'auto');
-  ga('send', 'pageview');
-
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
 </script>
 
 
@@ -58,6 +60,50 @@
 <div class="clearfix"></div></header>
   <div id="content" class="inner">
     <div id="main-col" class="alignleft"><div id="wrapper">
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2014-11-01T14:27:42.000Z"><a href="/2014/11/01/static关键字/">11月 1 2014</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2014/11/01/static关键字/">static关键字</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h3 id="static关键字">static关键字</h3>
+<p>使用static关键字的时机:</p>
+<ul>
+<li>希望没有创建对象就可以使用某个方法。</li>
+<li>无论创建多少对象时，都希望为某个特殊的域(field)分配单一存储空间。</li>
+</ul>
+<p>当声明一个事物是static时，就意味着这个field或function不会与包含它的那个类的任何对象实例关联在一起。所以即使没有创建类的实例，也可以通过访问类的static的field或function.</p>
+<p>使用类名是引用static变量的首选方式：</p>
+<ul>
+<li>强调了这个变量的static属性。</li>
+<li>为编译器优化创造了更好的机会。</li>
+</ul>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
   <article class="post">
   
   <div class="post-content">
@@ -169,6 +215,8 @@
   <h3 class="title">Categories</h3>
   <ul class="entry">
   
+    <li><a href="/categories/Core-Java/">Core Java</a><small>1</small></li>
+  
     <li><a href="/categories/Eclipse-Plugin-Development/">Eclipse Plugin Development</a><small>1</small></li>
   
   </ul>
@@ -179,7 +227,7 @@
 <div class="widget tagcloud">
   <h3 class="title">Tag Cloud</h3>
   <div class="entry">
-    <a href="/tags/AST/" style="font-size: NaNpx;">AST</a><a href="/tags/Eclipse-Plugin/" style="font-size: NaNpx;">Eclipse Plugin</a><a href="/tags/JAVA/" style="font-size: NaNpx;">JAVA</a>
+    <a href="/tags/AST/" style="font-size: NaNpx;">AST</a><a href="/tags/Eclipse-Plugin/" style="font-size: NaNpx;">Eclipse Plugin</a><a href="/tags/JAVA/" style="font-size: NaNpx;">JAVA</a><a href="/tags/java/" style="font-size: NaNpx;">java</a>
   </div>
 </div>
 
