@@ -66,19 +66,85 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2015-07-25T09:16:08.000Z"><a href="/2015/07/25/ArrayList源码分析/">7月 25 2015</a></time>
+        <time datetime="2015-08-09T04:12:02.000Z"><a href="/2015/08/09/http权威指南读书笔记1/">8月 9 2015</a></time>
       
       
   
-    <h1 class="title"><a href="/2015/07/25/ArrayList源码分析/"></a></h1>
+    <h1 class="title"><a href="/2015/08/09/http权威指南读书笔记1/"></a></h1>
   
 
     </header>
     <div class="entry">
       
-        <p>title: ArrayList源码分析<br>date: 2015-07-25 17:13:09<br>tags:[Java,Collection]</p>
-<h2 id="categories:_Java">categories: Java</h2>
-<h2 id="#">#</h2>
+        <p>《HTTP权威指南》读书笔记1 - 连接管理</p>
+<h2 id="1-HTTP如何使用TCP连接">1.HTTP如何使用TCP连接</h2>
+<h3 id="1-1_TCP连接">1.1 TCP连接</h3>
+<p>HTTP通信是基于TCP/IP，web浏览器与服务器的交互如下图：<br><img src="/img/HTTPConnections_1.jpg" alt="alt text"></p>
+<p>TCP为HTTP提供了一条可靠的比特传输管道， TCP会按序、无差错的传输HTTP数据。</p>
+<h3 id="1-2_TCP流是分段的，由IP分组传输">1.2 TCP流是分段的，由IP分组传输</h3>
+<p>TCP数据是通过IP分组或IP数据报传输，而HTTP通信基于TCP/IP，所以HTTP处于”HTTP over TCP over IP”协议栈的顶层。HTTPS是在HTTP与TCP之间插入了一层密码加密层(TLS或SSL)，层次图如下：<br><img src="/img/HTTPConnections_2.jpg" alt="alt text"></p>
+<p>当HTTP需要传输消息时，会以流的形式将报文数据的内容通过一条打开的TCP连接按序传输。TCP收到数据流之后，会将数据流砍成被称作段的小数据块，并将段封装在IP分组中，通过因特网进行传输。</p>
+<p>每一个TCP段都是由IP分组承载，由一个IP地址发送到另外一个IP地址。每个IP组都包含：</p>
+<ul>
+<li>一个IP分组首部(通常为20字节)</li>
+<li>一个TCP段首部(通常为20字节)</li>
+<li>一个TCP数据块(0个或多个字节)</li>
+</ul>
+<p>IP首部包含了源和目的IP地址、长度和其他一些标记。TCP段的首部包含了TCP端口号、TCP控制标记，以及用于数据排序和完整性检查的一些数字值:</p>
+<p><img src="/img/HTTPConnections_3.jpg" alt="alt text"></p>
+<h3 id="1-3_保持TCP连接的正确运行">1.3 保持TCP连接的正确运行</h3>
+<p>TCP是通过端口号来保持TCP连接的正确运行的，通过以下4个值来区分不同的TCP连接：</p>
+<ul>
+<li>&lt;源IP地址、源端口号、目的IP地址、目的端口号&gt;</li>
+</ul>
+<h2 id="2-对TCP性能的考虑">2.对TCP性能的考虑</h2>
+<h3 id="2-1_HTTP事务时延">2.1 HTTP事务时延</h3>
+<p>下图描述了HTTP事务主要的连接、传输以及处理时延：<br><img src="/img/HTTPConnections_4.jpg" alt="alt text" title="串行HTTP事务的时间线"></p>
+<p>与建立TCP连接，以及传输请求和响应报文的时间相比，事务处理时间可能是很短的。除非客户端或服务器超载，或正在处理复杂的动态资源，否则HTTP时延就是由TCP网络时延构成的。</p>
+<p>HTTP事务的时延有以下几种主要原因：</p>
+<ul>
+<li>DNS寻址时延，如果DNS没有被本地缓存，通过DNS解析系统将URI中的主机名转换成一个IP地址可能要花费数十秒的时间。</li>
+<li>连接时延，TCP三次握手开销。</li>
+<li>传输时延，HTTP请求通过TCP管道传输造成的时延。</li>
+<li>处理时延，web服务器写回HTTP response也需要时间。</li>
+</ul>
+<p><img src="/img/HTTPConnections_5.png" alt="alt text"></p>
+<h3 id="2-2_TCP连接握手时延">2.2 TCP连接握手时延</h3>
+<p><img src="/img/HTTPConnections_6.jpg" alt="alt text"><br>当HTTP事务传输数据很少时，TCP的SYN/SYN+ACK握手会产生一个可以测量的时延。小的HTTP事务可能花费超过50%的时间在TCP连接建立。因此需要利用长连接等特性来复用这个TCP连接。</p>
+<h3 id="2-3_延迟确认(Delayed_Acknowledgments)">2.3 延迟确认(Delayed Acknowledgments)</h3>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2015-08-09T01:48:20.000Z"><a href="/2015/08/09/ArrayList源码分析/">8月 9 2015</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2015/08/09/ArrayList源码分析/"></a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h3 id="ArrayList源码分析">ArrayList源码分析</h3>
 
       
     </div>
@@ -253,6 +319,10 @@
     <li><a href="/categories/Core-Java/">Core Java</a><small>1</small></li>
   
     <li><a href="/categories/Eclipse-Plugin-Development/">Eclipse Plugin Development</a><small>1</small></li>
+  
+    <li><a href="/categories/HTTP/">HTTP</a><small>1</small></li>
+  
+    <li><a href="/categories/Java/">Java</a><small>1</small></li>
   
   </ul>
 </div>
