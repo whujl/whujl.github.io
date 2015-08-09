@@ -66,18 +66,17 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2015-08-09T05:31:32.000Z"><a href="/2015/08/09/http权威指南读书笔记1/">8月 9 2015</a></time>
+        <time datetime="2015-08-09T06:11:51.000Z"><a href="/2015/08/09/http权威指南读书笔记1/">8月 9 2015</a></time>
       
       
   
-    <h1 class="title"><a href="/2015/08/09/http权威指南读书笔记1/"></a></h1>
+    <h1 class="title"><a href="/2015/08/09/http权威指南读书笔记1/">《HTTP权威指南》读书笔记1 - 连接管理</a></h1>
   
 
     </header>
     <div class="entry">
       
-        <p>《HTTP权威指南》读书笔记1 - 连接管理</p>
-<h2 id="1-HTTP如何使用TCP连接">1.HTTP如何使用TCP连接</h2>
+        <h2 id="1-HTTP如何使用TCP连接">1.HTTP如何使用TCP连接</h2>
 <h3 id="1-1_TCP连接">1.1 TCP连接</h3>
 <p>HTTP通信是基于TCP/IP，web浏览器与服务器的交互如下图：<br><img src="/img/HTTPConnections_1.jpg" alt="alt text"></p>
 <p>TCP为HTTP提供了一条可靠的比特传输管道， TCP会按序、无差错的传输HTTP数据。</p>
@@ -110,8 +109,37 @@
 </ul>
 <p><img src="/img/HTTPConnections_5.png" alt="alt text"></p>
 <h3 id="2-2_TCP连接握手时延">2.2 TCP连接握手时延</h3>
-<p><img src="/img/HTTPConnections_6.jpg" alt="alt text"><br>当HTTP事务传输数据很少时，TCP的SYN/SYN+ACK握手会产生一个可以测量的时延。小的HTTP事务可能花费超过50%的时间在TCP连接建立。因此需要利用长连接等特性来复用这个TCP连接。</p>
-<h3 id="2-3_延迟确认(Delayed_Acknowledgments)">2.3 延迟确认(Delayed Acknowledgments)</h3>
+<p><img src="/img/HTTPConnections_6.jpg" alt="alt text"></p>
+<p>当HTTP事务传输数据很少时，TCP的SYN/SYN+ACK握手会产生一个可以测量的时延。小的HTTP事务可能花费超过50%的时间在TCP连接建立。因此需要利用长连接等特性来复用这个TCP连接。</p>
+<h3 id="2-3_延迟确认(Delayed_ACK)">2.3 延迟确认(Delayed ACK)</h3>
+<p>每个TCP段都有一个序列号和一个数据完整性校验和(data-integrity checksum)。每个段的接收者收到完好的段时，都会向发送者回送一个小的确认分组。如果发送者没有在指定的窗口时间内收到确认信息，发送者就会认为分组已被破坏或损毁，并重发数据.</p>
+<p>由于确认报文很小，所以TCP允许在发往相同方向的输出数据分组中对其进行“捎带”。TCP将返回的确认信息与输出的数据分组结合在一起，可以更有效地利用网络。TCP在何时发送ack给对方有以下规定：</p>
+<ol>
+<li>当有响应数据要发送时,ack会随响数据立即发送给对方.</li>
+<li>如果没有响应数据,ack的发送将会有一个延迟,以等待看是否有响应数据可以一起发送,这称是”Delayed Ack”.但这个延迟最多不会超过500ms,一般为200ms.如果在200ms内有数据要发送,那么ack会随数据一起立即发送给对方.<strong>注意这里的延迟200ms,不是指的从接受到对方数据到发送ack的最长等待时间差.而是指的内核启动的一个定时器,它每隔200ms就查看下是否有ack要发送.</strong>例如:假设定时器在0ms时启动,对方的数据段在<br>185ms时到达,那么ack最迟会在200ms时发送,而不是385ms时发送.</li>
+<li>如果在等待发送ack期间,对方的第二个数据段又到达了,这时要立即发送ack.但是如果对方的三个数据段相继到达,那么第二个数据段到达时ack立即发送,但第三个数据段到达时是否立即发送,则取决于上面两条.</li>
+</ol>
+<h3 id="2-4_TCP慢启动">2.4 TCP慢启动</h3>
+<p>TCP数据传输的性能还取决于TCP连接的使用期（age）。TCP连接会随着时间进行自我“调谐”，起初会限制连接的最大速度，如果数据成功传输，会随着时间的推移提高传输的速度。这种调谐被称为TCP慢启动（slow start），用于防止因特网的突然过载和拥塞。</p>
+<p>可以使用持久连接来解决慢启动问题。</p>
+<h3 id="2-5_Nagle算法">2.5 Nagle算法</h3>
+<p>Nagle算法鼓励发送全尺寸（LAN上最大尺寸的分组大约是1500字节，在因特网上是几百字节）的段。只有当所有其他分组都被确认之后，Nagle算法才允许发送非全尺寸的分组。如果其他分组仍然在传输过程中，就将那部分数据缓存起来。只有当挂起分组被确认，或者缓存中积累了足够发送一个全尺寸分组的数据时，才会将缓存的数据发送出去。</p>
+<p>下面是Nagle算法的伪代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> there is <span class="keyword">new</span> data to send</div><div class="line">  <span class="keyword">if</span> the window size &gt;= MSS and available data is &gt;= MSS</div><div class="line">    send complete MSS segment now</div><div class="line">  <span class="keyword">else</span></div><div class="line">    <span class="keyword">if</span> there is unconfirmed data still in the pipe</div><div class="line">      enqueue data in the buffer until an acknowledge is received</div><div class="line">    <span class="keyword">else</span></div><div class="line">      send data immediately</div><div class="line">    end <span class="keyword">if</span></div><div class="line">  end <span class="keyword">if</span></div><div class="line">end <span class="keyword">if</span></div></pre></td></tr></table></figure>
+
+<h3 id="2-6_Nagle算法与Delayed_ACK同时出现的问题">2.6 Nagle算法与Delayed ACK同时出现的问题</h3>
+<p>A 和B进行数据传输 :  A运行Nagle算法，B运行delayed ACK算法：</p>
+<ol>
+<li>A-&gt;B 发一个packet, B不回应，delay ACK</li>
+<li>A-&gt;B 再发一个packet</li>
+<li>B收到第二个packet(数据包)，这时候会回应第一个packet(数据包)，即第一个ACK</li>
+<li>假设这时候A里的数据已经&lt;MSS，则A将停止发送数据，等待第二个packet(数据包)的ACK</li>
+</ol>
+<p>此时问题就来了，因为A没有收到第二个packet的ACK确认，同时数据&lt;MSS，由Nagle算法可以得知，这段数据将被被存到缓冲区等待发送，同时这时候B也在等A再发一个packet然后再回应一个ACK,所以这样A和B就发生了死锁了，但是Delayed Ack是有等待机制的，就是会等待500ms,一般是200ms，如果在这200ms内有数据数据要发送(ACK)，就回应一个packet(数据包)的ACK,这样就会打破这种死锁的问题。即只有当200ms(或小于200ms)的延迟过后双方才会继续传输。</p>
+<h3 id="2-7_TIME_WAIT累积与端口耗尽">2.7 TIME_WAIT累积与端口耗尽</h3>
+<p>当某个TCP端点关闭TCP连接时，会在内存中维护一个小的控制块，用来记录所关闭的连接的IP地址和端口号。这个信息通常只能存在一个小时间段。这个算法可以防止在短时间内创建、关闭具有相同IP和端口号的连接。</p>
+<p>TIME_WAIT的作用：允许老的重复分组在网络中消失，防止最后ACK的丢失，可靠地实现TCP全双工通信的终止。</p>
+<h2 id="3_HTTP连接的处理">3 HTTP连接的处理</h2>
 
       
     </div>
@@ -320,7 +348,7 @@
   
     <li><a href="/categories/Eclipse-Plugin-Development/">Eclipse Plugin Development</a><small>1</small></li>
   
-    <li><a href="/categories/HTTP/">HTTP</a><small>1</small></li>
+    <li><a href="/categories/HTTP/">HTTP</a><small>0</small></li>
   
     <li><a href="/categories/Java/">Java</a><small>1</small></li>
   
