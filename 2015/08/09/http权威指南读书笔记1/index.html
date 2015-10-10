@@ -139,6 +139,13 @@
 <p>当某个TCP端点关闭TCP连接时，会在内存中维护一个小的控制块，用来记录所关闭的连接的IP地址和端口号。这个信息通常只能存在一个小时间段。这个算法可以防止在短时间内创建、关闭具有相同IP和端口号的连接。</p>
 <p>TIME_WAIT的作用：允许老的重复分组在网络中消失，防止最后ACK的丢失，可靠地实现TCP全双工通信的终止。</p>
 <h2 id="3_HTTP连接的处理">3 HTTP连接的处理</h2>
+<p>Connection首部可以提供三种类型不同的标签：</p>
+<ul>
+<li>HTTP首部字段名，列出了只与此连接有关的首部</li>
+<li>任意标签纸，用于描述此连接的非标准选项</li>
+<li>close，说明操作完成后需要关闭这条持久连接</li>
+</ul>
+<h3 id="3-1_并行连接(Parallel_Connections)">3.1 并行连接(Parallel Connections)</h3>
 
       
     </div>
@@ -176,6 +183,8 @@
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
  <nav id="pagination" >
     
+    <a href="/2015/10/10/java-synthetic-method/" class="alignleft prev" >Prev</a>
+    
     
     <a href="/2015/08/09/ArrayList源码分析/" class="alignright next" >Next</a>
     
@@ -211,8 +220,6 @@ var duoshuoQuery = {short_name:"whuroger"};
     <li><a href="/categories/Core-Java/">Core Java</a><small>1</small></li>
   
     <li><a href="/categories/Eclipse-Plugin-Development/">Eclipse Plugin Development</a><small>1</small></li>
-  
-    <li><a href="/categories/HTTP/">HTTP</a><small>0</small></li>
   
     <li><a href="/categories/Java/">Java</a><small>1</small></li>
   

@@ -4,7 +4,7 @@
   <subtitle><![CDATA[仰望星空，脚踏实地]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://yoursite.com/"/>
-  <updated>2015-08-09T06:39:07.144Z</updated>
+  <updated>2015-10-10T01:43:19.113Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,11 +15,28 @@
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
   
   <entry>
+    <title><![CDATA[]]></title>
+    <link href="http://yoursite.com/2015/10/10/java-synthetic-method/"/>
+    <id>http://yoursite.com/2015/10/10/java-synthetic-method/</id>
+    <published>2015-10-10T01:43:08.000Z</published>
+    <updated>2015-10-10T01:43:08.000Z</updated>
+    <content type="html"><![CDATA[<p>title: java synthetic method<br>date: 2015-10-10 09:42:27<br>tags:Java Synthetic Reflect    </p>
+<h2 id="categories:">categories:</h2>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>title: java synthetic method<br>date: 2015-10-10 09:42:27<br>tags:Java Synthetic Reflect    </p>
+<h2 id="categories:">categories:</h2>
+]]>
+    </summary>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[《HTTP权威指南》读书笔记1 - 连接管理]]></title>
     <link href="http://yoursite.com/2015/08/09/http%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/"/>
     <id>http://yoursite.com/2015/08/09/http权威指南读书笔记1/</id>
     <published>2015-08-09T06:11:51.000Z</published>
-    <updated>2015-08-09T06:38:27.000Z</updated>
+    <updated>2015-08-09T06:52:58.000Z</updated>
     <content type="html"><![CDATA[<h2 id="1-HTTP如何使用TCP连接">1.HTTP如何使用TCP连接</h2>
 <h3 id="1-1_TCP连接">1.1 TCP连接</h3>
 <p>HTTP通信是基于TCP/IP，web浏览器与服务器的交互如下图：<br><img src="/img/HTTPConnections_1.jpg" alt="alt text"></p>
@@ -84,6 +101,13 @@
 <p>当某个TCP端点关闭TCP连接时，会在内存中维护一个小的控制块，用来记录所关闭的连接的IP地址和端口号。这个信息通常只能存在一个小时间段。这个算法可以防止在短时间内创建、关闭具有相同IP和端口号的连接。</p>
 <p>TIME_WAIT的作用：允许老的重复分组在网络中消失，防止最后ACK的丢失，可靠地实现TCP全双工通信的终止。</p>
 <h2 id="3_HTTP连接的处理">3 HTTP连接的处理</h2>
+<p>Connection首部可以提供三种类型不同的标签：</p>
+<ul>
+<li>HTTP首部字段名，列出了只与此连接有关的首部</li>
+<li>任意标签纸，用于描述此连接的非标准选项</li>
+<li>close，说明操作完成后需要关闭这条持久连接</li>
+</ul>
+<h3 id="3-1_并行连接(Parallel_Connections)">3.1 并行连接(Parallel Connections)</h3>
 ]]></content>
     <summary type="html">
     <![CDATA[<h2 id="1-HTTP如何使用TCP连接">1.HTTP如何使用TCP连接</h2>
