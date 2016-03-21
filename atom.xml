@@ -4,7 +4,7 @@
   <subtitle><![CDATA[仰望星空，脚踏实地]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://yoursite.com/"/>
-  <updated>2016-03-21T16:39:42.136Z</updated>
+  <updated>2016-03-21T16:44:35.368Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -80,7 +80,7 @@
     <link href="http://yoursite.com/2015/08/09/http%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B01/"/>
     <id>http://yoursite.com/2015/08/09/http权威指南读书笔记1/</id>
     <published>2015-08-09T06:11:51.000Z</published>
-    <updated>2015-08-09T06:52:58.000Z</updated>
+    <updated>2016-03-21T16:43:48.000Z</updated>
     <content type="html"><![CDATA[<h2 id="1-HTTP如何使用TCP连接">1.HTTP如何使用TCP连接</h2>
 <h3 id="1-1_TCP连接">1.1 TCP连接</h3>
 <p>HTTP通信是基于TCP/IP，web浏览器与服务器的交互如下图：<br><img src="/img/HTTPConnections_1.jpg" alt="alt text"></p>
@@ -159,6 +159,10 @@
 <p>HTTP通信是基于TCP/IP，web浏览器与服务器的交互如下图：<br><img src="/img/HTTPC]]>
     </summary>
     
+      <category term="HTTP" scheme="http://yoursite.com/tags/HTTP/"/>
+    
+      <category term="HTTP" scheme="http://yoursite.com/categories/HTTP/"/>
+    
   </entry>
   
   <entry>
@@ -166,7 +170,7 @@
     <link href="http://yoursite.com/2014/11/01/static%E5%85%B3%E9%94%AE%E5%AD%97/"/>
     <id>http://yoursite.com/2014/11/01/static关键字/</id>
     <published>2014-11-01T14:27:42.000Z</published>
-    <updated>2014-11-01T14:31:17.000Z</updated>
+    <updated>2016-03-21T16:41:00.000Z</updated>
     <content type="html"><![CDATA[<h3 id="static关键字">static关键字</h3>
 <p>使用static关键字的时机:</p>
 <ul>
@@ -189,9 +193,9 @@
 </ul]]>
     </summary>
     
-      <category term="java" scheme="http://yoursite.com/tags/java/"/>
+      <category term="Java" scheme="http://yoursite.com/tags/Java/"/>
     
-      <category term="Core Java" scheme="http://yoursite.com/categories/Core-Java/"/>
+      <category term="Java" scheme="http://yoursite.com/categories/Java/"/>
     
   </entry>
   
@@ -200,7 +204,7 @@
     <link href="http://yoursite.com/2014/10/26/%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91/"/>
     <id>http://yoursite.com/2014/10/26/抽象语法树/</id>
     <published>2014-10-26T12:11:39.000Z</published>
-    <updated>2014-10-26T12:49:54.000Z</updated>
+    <updated>2016-03-21T16:44:22.000Z</updated>
     <content type="html"><![CDATA[<p>Abstract Syntax Tree</p>
 <h3 id="The_Abstract_Syntax_Tree">The Abstract Syntax Tree</h3>
 <p><strong>抽象语法树</strong>是Eclipse处理源代码的方式，每一个Java源文件都可以用AST的节点来表示。这些节点都是ASTNode的子类。每一个子类都代表Java语言中的一个element。例如：MethodDeclaration是用来描述方法声明的节点，VariableDeclarationFragment用来描述变量声明。一个频繁使用的node是<strong>SimpleName</strong>,SimpleName是Java源代码中的除了<strong>关键词</strong>、<strong>布尔表达式</strong>或者<strong>null</strong>外的任何一个字符串。</p>
@@ -280,7 +284,7 @@
     
       <category term="AST" scheme="http://yoursite.com/tags/AST/"/>
     
-      <category term="JAVA" scheme="http://yoursite.com/tags/JAVA/"/>
+      <category term="Java" scheme="http://yoursite.com/tags/Java/"/>
     
       <category term="Eclipse Plugin" scheme="http://yoursite.com/tags/Eclipse-Plugin/"/>
     
