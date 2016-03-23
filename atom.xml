@@ -4,7 +4,7 @@
   <subtitle><![CDATA[仰望星空，脚踏实地]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://yoursite.com/"/>
-  <updated>2016-03-23T06:30:18.120Z</updated>
+  <updated>2016-03-23T06:35:20.018Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,14 +15,12 @@
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
   
   <entry>
-    <title><![CDATA[]]></title>
+    <title><![CDATA[Java泛型擦除与Synthetic方法]]></title>
     <link href="http://yoursite.com/2016/03/23/Java%E6%B3%9B%E5%9E%8B%E6%93%A6%E9%99%A4%E4%B8%8Esynthetic%E6%96%B9%E6%B3%95/"/>
     <id>http://yoursite.com/2016/03/23/Java泛型擦除与synthetic方法/</id>
-    <published>2016-03-23T06:30:01.000Z</published>
-    <updated>2016-03-23T06:30:01.000Z</updated>
-    <content type="html"><![CDATA[<p>title: Java泛型擦除与synthetic方法<br>date: 2016-03-23 13:44:15<br>tags:[Java, 泛型, synthetic]</p>
-<h2 id="categories:Java">categories:Java</h2>
-<h2 id="Java泛型擦除">Java泛型擦除</h2>
+    <published>2016-03-23T06:38:29.000Z</published>
+    <updated>2016-03-23T06:35:04.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="Java泛型擦除">Java泛型擦除</h2>
 <p>关于Java泛型与C++泛型比较这里不再讨论，直接来看Java例子：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> GenericDemo&lt;T&gt; {</div><div class="line">    <span class="keyword">private</span> T <span class="keyword">value</span>;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="keyword">public</span> T <span class="title">getValue</span>() {</div><div class="line">        <span class="keyword">return</span> <span class="keyword">value</span>;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span>(T <span class="keyword">value</span>) {</div><div class="line">        <span class="keyword">this</span>.<span class="keyword">value</span> = <span class="keyword">value</span>;</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
 
@@ -65,10 +63,14 @@
 <p>只有不是synthetic的方法才进行拦截。</p>
 ]]></content>
     <summary type="html">
-    <![CDATA[<p>title: Java泛型擦除与synthetic方法<br>date: 2016-03-23 13:44:15<br>tags:[Java, 泛型, synthetic]</p>
-<h2 id="categories:Java">categories:Java</h2>
-]]>
+    <![CDATA[<h2 id="Java泛型擦除">Java泛型擦除</h2>
+<p>关于Java泛型与C++泛型比较这里不再讨论，直接来看Java例子：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div ]]>
     </summary>
+    
+      <category term="Java" scheme="http://yoursite.com/tags/Java/"/>
+    
+      <category term="Java" scheme="http://yoursite.com/categories/Java/"/>
     
   </entry>
   

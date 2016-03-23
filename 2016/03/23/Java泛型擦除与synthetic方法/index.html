@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>遥远的小村庄</title>
+  <title>Java泛型擦除与Synthetic方法 | 遥远的小村庄</title>
   <meta name="author" content="Jiao Long">
   
   <meta name="description" content="Roger&#39;s blog | java | iOS | swift">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  
+  <meta property="og:title" content="Java泛型擦除与Synthetic方法"/>
   <meta property="og:site_name" content="遥远的小村庄"/>
 
   
@@ -65,19 +65,17 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2016-03-23T06:30:01.000Z"><a href="/2016/03/23/Java泛型擦除与synthetic方法/">3月 23 2016</a></time>
+        <time datetime="2016-03-23T06:38:29.000Z"><a href="/2016/03/23/Java泛型擦除与synthetic方法/">3月 23 2016</a></time>
       
       
   
-    <h1 class="title"></h1>
+    <h1 class="title">Java泛型擦除与Synthetic方法</h1>
   
 
     </header>
     <div class="entry">
       
-        <p>title: Java泛型擦除与synthetic方法<br>date: 2016-03-23 13:44:15<br>tags:[Java, 泛型, synthetic]</p>
-<h2 id="categories:Java">categories:Java</h2>
-<h2 id="Java泛型擦除">Java泛型擦除</h2>
+        <h2 id="Java泛型擦除">Java泛型擦除</h2>
 <p>关于Java泛型与C++泛型比较这里不再讨论，直接来看Java例子：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> GenericDemo&lt;T&gt; {</div><div class="line">    <span class="keyword">private</span> T <span class="keyword">value</span>;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="keyword">public</span> T <span class="title">getValue</span>() {</div><div class="line">        <span class="keyword">return</span> <span class="keyword">value</span>;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span>(T <span class="keyword">value</span>) {</div><div class="line">        <span class="keyword">this</span>.<span class="keyword">value</span> = <span class="keyword">value</span>;</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
 
@@ -124,7 +122,17 @@
     <footer>
       
         
+  
+  <div class="categories">
+    <a href="/categories/Java/">Java</a>
+  </div>
+
         
+  
+  <div class="tags">
+    <a href="/tags/Java/">Java</a>
+  </div>
+
         
   <div class="addthis addthis_toolbox addthis_default_style">
     
@@ -197,7 +205,7 @@ var duoshuoQuery = {short_name:"whuroger"};
   
     <li><a href="/categories/JUC源码解析/">JUC源码解析</a><small>1</small></li>
   
-    <li><a href="/categories/Java/">Java</a><small>1</small></li>
+    <li><a href="/categories/Java/">Java</a><small>2</small></li>
   
     <li><a href="/categories/java/">java</a><small>0</small></li>
   
