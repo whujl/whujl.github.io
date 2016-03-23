@@ -66,6 +66,115 @@
     <header>
       
         <div class="icon"></div>
+        <time datetime="2016-03-23T06:30:01.000Z"><a href="/2016/03/23/Java泛型擦除与synthetic方法/">3月 23 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/03/23/Java泛型擦除与synthetic方法/"></a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>title: Java泛型擦除与synthetic方法<br>date: 2016-03-23 13:44:15<br>tags:[Java, 泛型, synthetic]</p>
+<h2 id="categories:Java">categories:Java</h2>
+<h2 id="Java泛型擦除">Java泛型擦除</h2>
+<p>关于Java泛型与C++泛型比较这里不再讨论，直接来看Java例子：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> GenericDemo&lt;T&gt; {</div><div class="line">    <span class="keyword">private</span> T <span class="keyword">value</span>;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="keyword">public</span> T <span class="title">getValue</span>() {</div><div class="line">        <span class="keyword">return</span> <span class="keyword">value</span>;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span>(T <span class="keyword">value</span>) {</div><div class="line">        <span class="keyword">this</span>.<span class="keyword">value</span> = <span class="keyword">value</span>;</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>下面是经过javap -c -p GenericDemo.class 反编译以后的文件：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">class</span> generic.GenericDemo&lt;T&gt; {</div><div class="line">  <span class="keyword">private</span> T <span class="keyword">value</span>;</div><div class="line"></div><div class="line">  <span class="keyword">public</span> generic.<span class="title">GenericDemo</span>();</div><div class="line">    Code:</div><div class="line">       <span class="number">0</span>: aload_0       </div><div class="line">       <span class="number">1</span>: invokespecial <span class="preprocessor">#1                  // Method java/lang/Object."&lt;init&gt;":()V</span></div><div class="line">       <span class="number">4</span>: <span class="keyword">return</span>        </div><div class="line"></div><div class="line">  <span class="keyword">public</span> T <span class="title">getValue</span>();</div><div class="line">    Code:</div><div class="line">       <span class="number">0</span>: aload_0       </div><div class="line">       <span class="number">1</span>: getfield      <span class="preprocessor">#2                  // Field value:Ljava/lang/Object;</span></div><div class="line">       <span class="number">4</span>: areturn       </div><div class="line"></div><div class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span>(T);</div><div class="line">    Code:</div><div class="line">       <span class="number">0</span>: aload_0       </div><div class="line">       <span class="number">1</span>: aload_1       </div><div class="line">       <span class="number">2</span>: putfield      <span class="preprocessor">#2                  // Field value:Ljava/lang/Object;</span></div><div class="line">       <span class="number">5</span>: <span class="keyword">return</span>        </div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>可以看出javac已经将value的类型T编译为了Object类型。</p>
+<h2 id="Synthetic方法与方法Override">Synthetic方法与方法Override</h2>
+<p>我们为上文中的GenericDemo写一个子类：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> <span class="keyword">extends</span> <span class="title">GenericDemo</span>&lt;<span class="title">String</span>&gt; </span>{</div><div class="line"></div><div class="line">    <span class="keyword">private</span> String value;</div><div class="line"></div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> String <span class="title">getValue</span>() {</div><div class="line">        <span class="keyword">return</span> value;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span>(String value) {</div><div class="line">        <span class="keyword">this</span>.value = value;</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>子类A override了父类的getValue()与setValue()方法，那么问题来了，子类的setValue(String value)的参数类型为String， 而父类经过泛型擦除以后为Object，参数类型不同又为何可以override。</p>
+<p>这里再提一个问题，A.class.getDeclaredMethods()有几个？</p>
+<p>根据Jdk对于getDeclaredMethods()文档，getDeclaredMethods()是不包括继承的方法的：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Returns an <span class="keyword">array</span> containing Method objects reflecting all the declared methods <span class="keyword">of</span> the <span class="keyword">class</span> <span class="keyword">or</span> <span class="keyword">interface</span> represented by this <span class="keyword">Class</span> <span class="keyword">object</span>, including <span class="keyword">public</span>, <span class="keyword">protected</span>, <span class="keyword">default</span> (package) access, <span class="keyword">and</span> <span class="keyword">private</span> methods, but excluding <span class="keyword">inherited</span> methods.</div></pre></td></tr></table></figure>
+
+<p>那么这里应该返回2才对，但实际却返回了4:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> java.lang.Object generic.A.<span class="title">getValue</span>() <span class="keyword">is</span> synthetic : <span class="keyword">true</span></div><div class="line"><span class="keyword">public</span> java.lang.String generic.A.<span class="title">getValue</span>() <span class="keyword">is</span> synthetic : <span class="keyword">false</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">void</span> generic.A.<span class="title">setValue</span>(java.lang.String) <span class="keyword">is</span> synthetic : <span class="keyword">false</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">void</span> generic.A.<span class="title">setValue</span>(java.lang.Object) <span class="keyword">is</span> synthetic : <span class="keyword">true</span></div></pre></td></tr></table></figure>
+
+<p>可以看出这里多了个两个方法，并且我多打印了一个属性synthetic。synthetic意思是合成的，这里为什么会多生成两个get和set方法?还是回到泛型中来，因为要实现override，这时编译器自动生成了两个方法来进行类型转换，下面是反编译后代码：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span>(java.lang.String);</div><div class="line">  Code:</div><div class="line">     <span class="number">0</span>: aload_0       </div><div class="line">     <span class="number">1</span>: aload_1       </div><div class="line">     <span class="number">2</span>: putfield      <span class="preprocessor">#2                  // Field value:Ljava/lang/String;</span></div><div class="line">     <span class="number">5</span>: <span class="keyword">return</span>    </div><div class="line"> </div><div class="line"> <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setValue</span>(java.lang.Object);</div><div class="line">  Code:</div><div class="line">     <span class="number">0</span>: aload_0       </div><div class="line">     <span class="number">1</span>: aload_1       </div><div class="line">     <span class="number">2</span>: checkcast     <span class="preprocessor">#15                 // class java/lang/String</span></div><div class="line">     <span class="number">5</span>: invokevirtual <span class="preprocessor">#16                 // Method setValue:(Ljava/lang/String;)V</span></div><div class="line">     <span class="number">8</span>: <span class="keyword">return</span></div></pre></td></tr></table></figure>
+
+<p>可以看到第二个setValue(Object)方法，先将object转换为String, 然后再去调用setValue(String)方法。</p>
+<p>关于Synthetic方法，更多的可以参考：<a href="http://stackoverflow.com/questions/289731/what-java-lang-reflect-method-isbridge-used-for" target="_blank" rel="external">http://stackoverflow.com/questions/289731/what-java-lang-reflect-method-isbridge-used-for</a></p>
+<h2 id="Synthetic方法与继承">Synthetic方法与继承</h2>
+<p>关于Synthetic方法，并不一定是只在泛型擦除时候出现,来看下面一种情况：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">class <span class="type">Parent</span> {</div><div class="line">    <span class="type">void</span> <span class="keyword">method</span>(){}</div><div class="line">}</div><div class="line"></div><div class="line">public class <span class="type">Son</span> extends <span class="type">Parent</span> {</div><div class="line">    public <span class="type">void</span> methodB(){</div><div class="line">        super.<span class="keyword">method</span>();</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>有一个包级别可见的类Parent，子类Son继承父类，并作为代理将父类提供给外界使用，这时查看Son的binary code:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">Compiled from <span class="string">"Son.java"</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">generic</span>.<span class="title">Son</span> <span class="keyword">extends</span> <span class="title">generic</span>.<span class="title">Parent</span> </span>{</div><div class="line">  <span class="keyword">public</span> generic.<span class="title">Son</span>();</div><div class="line">    Code:</div><div class="line">       <span class="number">0</span>: aload_0       </div><div class="line">       <span class="number">1</span>: invokespecial #<span class="number">1</span>                  <span class="comment">// Method generic/Parent."&lt;init&gt;":()V</span></div><div class="line">       <span class="number">4</span>: <span class="keyword">return</span>        </div><div class="line"></div><div class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">methodB</span>();</div><div class="line">    Code:</div><div class="line">       <span class="number">0</span>: aload_0       </div><div class="line">       <span class="number">1</span>: invokespecial #<span class="number">2</span>                  <span class="comment">// Method generic/Parent.method:()V</span></div><div class="line">       <span class="number">4</span>: <span class="keyword">return</span>        </div><div class="line"></div><div class="line">  <span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span>();</div><div class="line">    Code:</div><div class="line">       <span class="number">0</span>: aload_0       </div><div class="line">       <span class="number">1</span>: invokespecial #<span class="number">2</span>                  <span class="comment">// Method generic/Parent.method:()V</span></div><div class="line">       <span class="number">4</span>: <span class="keyword">return</span>        </div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>可以看到method方法也在Son中被生成了，这也是一个Synthetic方法。</p>
+<h2 id="Synthetic方法与AOP">Synthetic方法与AOP</h2>
+<p>有使用过Guice作为DI容器，以及进行AOP时候，会发现Guice有时会抛出warning:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="type">The</span> <span class="keyword">method</span> may be intercepted twice.</div></pre></td></tr></table></figure>
+
+<p>这就是由于Synthetic方法导致的，应该是Guice的一个bug。一种解决方案就是在绑定intercepter时候配置一个相应的Matcher:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">NoSyntheticMethodMatcher</span> <span class="keyword">extends</span> <span class="title">AbstractMatcher</span>&lt;<span class="title">Method</span>&gt; </span>{</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> NoSyntheticMethodMatcher INSTANCE = <span class="keyword">new</span> NoSyntheticMethodMatcher();</div><div class="line">    <span class="keyword">private</span> <span class="title">NoSyntheticMethodMatcher</span>() {}</div><div class="line"></div><div class="line">    <span class="annotation">@Override</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">matches</span>(Method method) {</div><div class="line">        <span class="keyword">return</span> !method.isSynthetic();</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>只有不是synthetic的方法才进行拦截。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-03-22T09:38:29.000Z"><a href="/2016/03/22/JUC锁概览/">3月 22 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/03/22/JUC锁概览/">JUC锁概览</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="JUC包中锁的类图">JUC包中锁的类图</h2>
+<p><img src="/img/Lock.jpg" alt="alt Lock类图"></p>
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
         <time datetime="2016-03-22T09:25:15.000Z"><a href="/2016/03/22/LockSupport类解析/">3月 22 2016</a></time>
       
       
@@ -447,6 +556,8 @@
   
     <li><a href="/categories/JUC源码分析/">JUC源码分析</a><small>3</small></li>
   
+    <li><a href="/categories/JUC源码解析/">JUC源码解析</a><small>1</small></li>
+  
     <li><a href="/categories/Java/">Java</a><small>1</small></li>
   
     <li><a href="/categories/java/">java</a><small>0</small></li>
@@ -459,7 +570,7 @@
 <div class="widget tagcloud">
   <h3 class="title">Tag Cloud</h3>
   <div class="entry">
-    <a href="/tags/AST/" style="font-size: 15.00px;">AST</a><a href="/tags/Eclipse-Plugin/" style="font-size: 15.00px;">Eclipse Plugin</a><a href="/tags/HTTP/" style="font-size: 15.00px;">HTTP</a><a href="/tags/HashMap/" style="font-size: 10.00px;">HashMap</a><a href="/tags/HashSet/" style="font-size: 10.00px;">HashSet</a><a href="/tags/JAVA/" style="font-size: 10.00px;">JAVA</a><a href="/tags/Java/" style="font-size: 20.00px;">Java</a><a href="/tags/Java，JUC/" style="font-size: 15.00px;">Java，JUC</a><a href="/tags/Java，JUC，源码/" style="font-size: 20.00px;">Java，JUC，源码</a><a href="/tags/java/" style="font-size: 10.00px;">java</a>
+    <a href="/tags/AST/" style="font-size: 13.33px;">AST</a><a href="/tags/Eclipse-Plugin/" style="font-size: 13.33px;">Eclipse Plugin</a><a href="/tags/HTTP/" style="font-size: 13.33px;">HTTP</a><a href="/tags/HashMap/" style="font-size: 10.00px;">HashMap</a><a href="/tags/HashSet/" style="font-size: 10.00px;">HashSet</a><a href="/tags/JAVA/" style="font-size: 10.00px;">JAVA</a><a href="/tags/JUC/" style="font-size: 13.33px;">JUC</a><a href="/tags/Java/" style="font-size: 20.00px;">Java</a><a href="/tags/Java，JUC/" style="font-size: 13.33px;">Java，JUC</a><a href="/tags/Java，JUC，源码/" style="font-size: 16.67px;">Java，JUC，源码</a><a href="/tags/Lock/" style="font-size: 13.33px;">Lock</a><a href="/tags/java/" style="font-size: 10.00px;">java</a>
   </div>
 </div>
 

@@ -2,6 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/2016/03/23/Java%E6%B3%9B%E5%9E%8B%E6%93%A6%E9%99%A4%E4%B8%8Esynthetic%E6%96%B9%E6%B3%95/</loc>
+    <lastmod>2016-03-23T06:30:01.000Z</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://yoursite.com/2016/03/22/JUC%E9%94%81%E6%A6%82%E8%A7%88/</loc>
+    <lastmod>2016-03-22T09:42:49.000Z</lastmod>
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/2016/03/22/LockSupport%E7%B1%BB%E8%A7%A3%E6%9E%90/</loc>
     <lastmod>2016-03-22T09:25:15.000Z</lastmod>
   </url>
