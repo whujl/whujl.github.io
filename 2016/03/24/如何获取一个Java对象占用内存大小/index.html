@@ -1,0 +1,220 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>遥远的小村庄</title>
+  <meta name="author" content="Jiao Long">
+  
+  <meta name="description" content="Roger&#39;s blog | java | iOS | swift">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  
+  <meta property="og:site_name" content="遥远的小村庄"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="遥远的小村庄" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-56109842-1']);
+  
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">遥远的小村庄</a></h1>
+  <h2><a href="/">仰望星空，脚踏实地</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">主页</a></li>
+    
+      <li><a href="/archives">归档</a></li>
+    
+      <li><a href="/about">关于</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-03-24T09:43:27.000Z"><a href="/2016/03/24/如何获取一个Java对象占用内存大小/">3月 24 2016</a></time>
+      
+      
+  
+    <h1 class="title"></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>title: 如何获取一个Java对象占用内存大小<br>date: 2016-03-24 17:04:02<br>tags: [Java]</p>
+<h2 id="categories:Java内存管理">categories:Java内存管理</h2>
+<p>这几天在准备面试，把《深入理解Java虚拟机》，《深入分析Java Web》这两本书又翻了一遍，回顾了一些关于JVM内存划分相关的知识，但是对于如何判断Java对象内存大小并没有什么思路，于是在网上找到了一篇神文：<a href="http://www.jroller.com/maxim/entry/again_about_determining_size_of" target="_blank" rel="external">Again about determining size of Java object
+</a> ，里面提供了一种采用Java Instrumentation计算Java对象内存大小的方法。</p>
+<h2 id="几种不同的计算Java内存大小的方式">几种不同的计算Java内存大小的方式</h2>
+<ul>
+<li><a href="http://jroller.com/mipsJava/entry/sizeof_java_objects" target="_blank" rel="external">http://jroller.com/mipsJava/entry/sizeof_java_objects</a>提供了一种很巧妙的方法，采用System.gc(),Runtime.freeMemory()和Runtime.totalMemory(), 先创建大量的对象，然后分别比较GC前后heap的大小，就可以计算出每个对象所占内存大小。</li>
+<li>估算所有primitive type的大小来估算对象大小。</li>
+<li>使用Instrumentation.getObjectSize()方法。</li>
+</ul>
+<h2 id="使用Instrumentation_API计算内存大小">使用Instrumentation API计算内存大小</h2>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.lang.instrument.Instrumentation;</div><div class="line"><span class="keyword">import</span> java.lang.reflect.Array;</div><div class="line"><span class="keyword">import</span> java.lang.reflect.Field;</div><div class="line"><span class="keyword">import</span> java.lang.reflect.Modifier;</div><div class="line"><span class="keyword">import</span> java.util.IdentityHashMap;</div><div class="line"><span class="keyword">import</span> java.util.Map;</div><div class="line"><span class="keyword">import</span> java.util.Stack;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SizeOfAgent</span> </span>{</div><div class="line"></div><div class="line">    <span class="keyword">static</span> Instrumentation inst;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">premain</span>(String agentArgs, Instrumentation instP) {</div><div class="line">        inst = instP;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="javadoc">/**</span></div><div class="line">     * 直接计算当前对象占用空间大小，包括当前类及超类的基本类型实例字段大小、&lt;/br&gt;</div><div class="line">     * 引用类型实例字段引用大小、实例基本类型数组总占用空间、实例引用类型数组引用本身占用空间大小;&lt;/br&gt;</div><div class="line">     * 但是不包括超类继承下来的和当前类声明的实例引用字段的对象本身的大小、实例引用数组引用的对象本身的大小 &lt;/br&gt;</div><div class="line">     * 具体结果和JVM不同实现有关.</div><div class="line">     */</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">long</span> <span class="title">sizeOf</span>(Object o) {</div><div class="line">        <span class="keyword">if</span> (inst == <span class="keyword">null</span>) {</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Can not access instrumentation environment.\n"</span> +</div><div class="line">                    <span class="string">"Please check if jar file containing SizeOfAgent class is \n"</span> +</div><div class="line">                    <span class="string">"specified in the java's \"-javaagent\" command line argument."</span>);</div><div class="line">        }</div><div class="line">        <span class="keyword">return</span> inst.getObjectSize(o);</div><div class="line">    }</div><div class="line"></div><div class="line"></div><div class="line">    <span class="javadoc">/**</span></div><div class="line">     * Calculates full size of object iterating over its hierarchy graph.</div><div class="line">     *<span class="javadoctag"> @param</span> obj object to calculate size of</div><div class="line">     *<span class="javadoctag"> @return</span> object size</div><div class="line">     */</div><div class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">long</span> <span class="title">fullSizeOf</span>(Object obj) {</div><div class="line">        Map&lt;Object, Object&gt; visited = <span class="keyword">new</span> IdentityHashMap&lt;Object, Object&gt;();</div><div class="line">        Stack&lt;Object&gt; stack = <span class="keyword">new</span> Stack&lt;Object&gt;();</div><div class="line"></div><div class="line">        <span class="keyword">long</span> result = internalSizeOf(obj, stack, visited);</div><div class="line">        <span class="keyword">while</span> (!stack.isEmpty()) {</div><div class="line">            result += internalSizeOf(stack.pop(), stack, visited);</div><div class="line">        }</div><div class="line">        visited.clear();</div><div class="line">        <span class="keyword">return</span> result;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">skipObject</span>(Object obj, Map&lt;Object, Object&gt; visited) {</div><div class="line">        <span class="keyword">if</span> (obj <span class="keyword">instanceof</span> String) {</div><div class="line">            <span class="comment">// skip interned string</span></div><div class="line">            <span class="keyword">if</span> (obj == ((String) obj).intern()) {</div><div class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">            }</div><div class="line">        }</div><div class="line">        <span class="keyword">return</span> (obj == <span class="keyword">null</span>) <span class="comment">// skip visited object</span></div><div class="line">                || visited.containsKey(obj);</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">long</span> <span class="title">internalSizeOf</span>(Object obj, Stack&lt;Object&gt; stack, Map&lt;Object, Object&gt; visited) {</div><div class="line">        <span class="keyword">if</span> (skipObject(obj, visited)) {</div><div class="line">            <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">        }</div><div class="line">        visited.put(obj, <span class="keyword">null</span>);</div><div class="line"></div><div class="line">        <span class="keyword">long</span> result = <span class="number">0</span>;</div><div class="line">        <span class="comment">// get size of object + primitive variables + member pointers</span></div><div class="line">        result += SizeOfAgent.sizeOf(obj);</div><div class="line"></div><div class="line">        <span class="comment">// process all array elements</span></div><div class="line">        Class clazz = obj.getClass();</div><div class="line">        <span class="keyword">if</span> (clazz.isArray()) {</div><div class="line">            <span class="keyword">if</span> (clazz.getName().length() != <span class="number">2</span>) {<span class="comment">// skip primitive type array</span></div><div class="line">                <span class="keyword">int</span> length = Array.getLength(obj);</div><div class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; length; i++) {</div><div class="line">                    stack.add(Array.get(obj, i));</div><div class="line">                }</div><div class="line">            }</div><div class="line">            <span class="keyword">return</span> result;</div><div class="line">        }</div><div class="line"></div><div class="line">        <span class="comment">// process all fields of the object</span></div><div class="line">        <span class="keyword">while</span> (clazz != <span class="keyword">null</span>) {</div><div class="line">            Field[] fields = clazz.getDeclaredFields();</div><div class="line">            <span class="keyword">for</span> (Field field : fields) {</div><div class="line">                <span class="keyword">if</span> (!Modifier.isStatic(field.getModifiers())) {</div><div class="line">                    <span class="keyword">if</span> (field.getType().isPrimitive()) {</div><div class="line">                        <span class="keyword">continue</span>;</div><div class="line">                    } <span class="keyword">else</span> {</div><div class="line">                        field.setAccessible(<span class="keyword">true</span>);</div><div class="line">                        <span class="keyword">try</span> {</div><div class="line">                            <span class="comment">// objects to be estimated are put to stack</span></div><div class="line">                            Object objectToAdd = field.get(obj);</div><div class="line">                            <span class="keyword">if</span> (objectToAdd != <span class="keyword">null</span>) {</div><div class="line">                                stack.add(objectToAdd);</div><div class="line">                            }</div><div class="line">                        } <span class="keyword">catch</span> (IllegalAccessException ex) {</div><div class="line">                            <span class="keyword">assert</span> <span class="keyword">false</span>;</div><div class="line">                        }</div><div class="line">                    }</div><div class="line">                }</div><div class="line">            }</div><div class="line">            clazz = clazz.getSuperclass();</div><div class="line">        }</div><div class="line">        <span class="keyword">return</span> result;</div><div class="line">    }</div><div class="line"></div><div class="line">}</div></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer>
+      
+        
+        
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+      <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+  <div class="ds-thread" data-thread-key="my-new-post/" data-title="抽象语法树" data-url="请替换成文章的网址"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+ <nav id="pagination" >
+    
+    
+    <a href="/2016/03/24/Least Recently Used(LRU)缓存/" class="alignright next" >Next</a>
+    
+    <div class="clearfix"></div>
+</nav>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"whuroger"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.unstable.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:yoursite.com">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/Core-Java/">Core Java</a><small>0</small></li>
+  
+    <li><a href="/categories/Data-Structure/">Data Structure</a><small>1</small></li>
+  
+    <li><a href="/categories/Eclipse-Plugin-Development/">Eclipse Plugin Development</a><small>1</small></li>
+  
+    <li><a href="/categories/HTTP/">HTTP</a><small>1</small></li>
+  
+    <li><a href="/categories/JUC源码分析/">JUC源码分析</a><small>3</small></li>
+  
+    <li><a href="/categories/JUC源码解析/">JUC源码解析</a><small>1</small></li>
+  
+    <li><a href="/categories/Java/">Java</a><small>2</small></li>
+  
+    <li><a href="/categories/java/">java</a><small>0</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">Tag Cloud</h3>
+  <div class="entry">
+    <a href="/tags/AST/" style="font-size: 13.33px;">AST</a><a href="/tags/Cache/" style="font-size: 13.33px;">Cache</a><a href="/tags/Eclipse-Plugin/" style="font-size: 13.33px;">Eclipse Plugin</a><a href="/tags/HTTP/" style="font-size: 13.33px;">HTTP</a><a href="/tags/HashMap/" style="font-size: 10.00px;">HashMap</a><a href="/tags/HashSet/" style="font-size: 10.00px;">HashSet</a><a href="/tags/JAVA/" style="font-size: 10.00px;">JAVA</a><a href="/tags/JUC/" style="font-size: 13.33px;">JUC</a><a href="/tags/Java/" style="font-size: 20.00px;">Java</a><a href="/tags/Java，JUC/" style="font-size: 13.33px;">Java，JUC</a><a href="/tags/Java，JUC，源码/" style="font-size: 16.67px;">Java，JUC，源码</a><a href="/tags/LRU/" style="font-size: 13.33px;">LRU</a><a href="/tags/Lock/" style="font-size: 13.33px;">Lock</a><a href="/tags/java/" style="font-size: 10.00px;">java</a>
+  </div>
+</div>
+
+
+  <div class="widget tag">
+<h3 class="title">友情链接</h3>
+<ul class="entry">
+<li><a href="http://zipperary.com/" title="Zippera's Blog">Zippera</a></li>
+</ul>
+</div>
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Jiao Long
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>
