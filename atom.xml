@@ -4,7 +4,7 @@
   <subtitle><![CDATA[仰望星空，脚踏实地]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://yoursite.com/"/>
-  <updated>2016-03-24T09:43:34.243Z</updated>
+  <updated>2016-03-24T09:45:47.017Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,14 +15,12 @@
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
   
   <entry>
-    <title><![CDATA[]]></title>
+    <title><![CDATA[如何获取一个Java对象占用内存大小]]></title>
     <link href="http://yoursite.com/2016/03/24/%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E4%B8%80%E4%B8%AAJava%E5%AF%B9%E8%B1%A1%E5%8D%A0%E7%94%A8%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F/"/>
     <id>http://yoursite.com/2016/03/24/如何获取一个Java对象占用内存大小/</id>
-    <published>2016-03-24T09:43:27.000Z</published>
-    <updated>2016-03-24T09:43:27.000Z</updated>
-    <content type="html"><![CDATA[<p>title: 如何获取一个Java对象占用内存大小<br>date: 2016-03-24 17:04:02<br>tags: [Java]</p>
-<h2 id="categories:Java内存管理">categories:Java内存管理</h2>
-<p>这几天在准备面试，把《深入理解Java虚拟机》，《深入分析Java Web》这两本书又翻了一遍，回顾了一些关于JVM内存划分相关的知识，但是对于如何判断Java对象内存大小并没有什么思路，于是在网上找到了一篇神文：<a href="http://www.jroller.com/maxim/entry/again_about_determining_size_of" target="_blank" rel="external">Again about determining size of Java object
+    <published>2016-03-24T08:38:29.000Z</published>
+    <updated>2016-03-24T09:45:20.000Z</updated>
+    <content type="html"><![CDATA[<p>这几天在准备面试，把《深入理解Java虚拟机》，《深入分析Java Web》这两本书又翻了一遍，回顾了一些关于JVM内存划分相关的知识，但是对于如何判断Java对象内存大小并没有什么思路，于是在网上找到了一篇神文：<a href="http://www.jroller.com/maxim/entry/again_about_determining_size_of" target="_blank" rel="external">Again about determining size of Java object
 </a> ，里面提供了一种采用Java Instrumentation计算Java对象内存大小的方法。</p>
 <h2 id="几种不同的计算Java内存大小的方式">几种不同的计算Java内存大小的方式</h2>
 <ul>
@@ -35,10 +33,12 @@
 
 ]]></content>
     <summary type="html">
-    <![CDATA[<p>title: 如何获取一个Java对象占用内存大小<br>date: 2016-03-24 17:04:02<br>tags: [Java]</p>
-<h2 id="categories:Java内存管理">categories:Java内存管理</h2>
-<p>这几天在准]]>
+    <![CDATA[<p>这几天在准备面试，把《深入理解Java虚拟机》，《深入分析Java Web》这两本书又翻了一遍，回顾了一些关于JVM内存划分相关的知识，但是对于如何判断Java对象内存大小并没有什么思路，于是在网上找到了一篇神文：<a href="http://www.jroller.co]]>
     </summary>
+    
+      <category term="Java" scheme="http://yoursite.com/tags/Java/"/>
+    
+      <category term="Java内存" scheme="http://yoursite.com/categories/Java%E5%86%85%E5%AD%98/"/>
     
   </entry>
   
