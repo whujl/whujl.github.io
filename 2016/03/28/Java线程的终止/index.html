@@ -1,0 +1,253 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Java线程的终止 | 遥远的小村庄</title>
+  <meta name="author" content="Jiao Long">
+  
+  <meta name="description" content="Roger&#39;s blog | java | iOS | swift">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Java线程的终止"/>
+  <meta property="og:site_name" content="遥远的小村庄"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="遥远的小村庄" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-56109842-1']);
+  
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">遥远的小村庄</a></h1>
+  <h2><a href="/">仰望星空，脚踏实地</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">主页</a></li>
+    
+      <li><a href="/archives">归档</a></li>
+    
+      <li><a href="/about">关于</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-03-27T17:14:18.000Z"><a href="/2016/03/28/Java线程的终止/">3月 28 2016</a></time>
+      
+      
+  
+    <h1 class="title">Java线程的终止</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>Java没有提供任何机制来安全地终止线程，因此只有通过一些协作式的机制，使请求取消的任务和代码都遵循一种协商好的协议。</p>
+<p>一个可取消的任务必须拥有取消策略，在这个策略中详细地定义取消操作的”How”/“When”/“what”，即其他代码如何请求取消该任务，在何时检查是否已经取消了请求，以及相应取消请求时应该执行哪些操作。</p>
+<p>下面介绍几种取消任务的方法：</p>
+<h2 id="使用volatile设置已请求取消标志">使用volatile设置已请求取消标志</h2>
+<p>这种方式通过设置一个“已请求取消标志”，任务定期地咋查看该flag,如果设置了这个标志，那么任务将提前结束：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PrimeGenerator</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>{</div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> List&lt;BigInteger&gt; primes = <span class="keyword">new</span> ArrayList&lt;BigInteger&gt;();</div><div class="line">	<span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> cancelled;</div><div class="line">	</div><div class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span>(){</div><div class="line">		BigInteger p = BigInteger.ONE;</div><div class="line">		<span class="keyword">while</span>(!cancelled){</div><div class="line">			p = p.nextProbablePrime();</div><div class="line">			<span class="keyword">synchronized</span>(<span class="keyword">this</span>){</div><div class="line">				primes.add(p);</div><div class="line">			}</div><div class="line">		}</div><div class="line">		</div><div class="line">	}</div><div class="line">	</div><div class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cancel</span>(){</div><div class="line">		<span class="keyword">this</span>.cacelled = <span class="keyword">true</span>;</div><div class="line">	}</div><div class="line">	</div><div class="line">	<span class="keyword">public</span> <span class="keyword">synchronized</span> List&lt;BigInteger&gt; <span class="title">get</span>(){</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> ArrayList&lt;BigInteger&gt;(primes);</div><div class="line">	}</div><div class="line"></div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>如果这些需要使用生产者消费者，生产者线程生成素数，并将它们放入到一个阻塞队列。如果生产者的速度超过了消费者的处理速度，队列将被填满，put方法也会阻塞。当生产者在put方法中阻塞时，如果消费者希望取消生产者任务，将cancelled设置为true，但是这时生产者还处于阻塞状态，无法检查这个flag，也无法停止生产。</p>
+<h2 id="使用中断实现取消">使用中断实现取消</h2>
+<p>对于上面介绍这种情况，可以使用中断而不是boolean标志来请求取消。因为每个线程都有一个boolean类型的中断状态，当中断线程时，这个线程的中断状态将被置为true。中断并不会真正地中断一个正在运行的线程，而只是发出中断请求，然后由线程在下一个合适的取消点中断自己。</p>
+<p>这种中断机制与取消标志位相比，它能够与可阻塞的库函数实现良好交互。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PrimeProducer</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>{</div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> BlockingQueue&lt;BigInteger&gt; queue;</div><div class="line">	</div><div class="line">	<span class="keyword">public</span> <span class="title">PrimeProducer</span>(BlockingQueue&lt;BigInteger queue){</div><div class="line">		<span class="keyword">this</span>.queue = queue;</div><div class="line">	}</div><div class="line">	</div><div class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span>(){</div><div class="line">		<span class="keyword">try</span>{</div><div class="line">			BigInteger p = BigInteger.ONE;</div><div class="line">			<span class="keyword">while</span>(!Thread.currentThread.isInterrupted()){</div><div class="line">				queue.put(p = p.nextProbablePrime());</div><div class="line">			}<span class="keyword">catch</span>(InterruptedException consumed){</div><div class="line">			}</div><div class="line">		}</div><div class="line">	}</div><div class="line">	</div><div class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cancel</span>(){</div><div class="line">		interrupt();</div><div class="line">	}</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>这里虽然调用了put方法，put方法会相应中断，因此并不一定需要进行显式的检测。但执行检测却会使PrimeProducer对中断具有更高的相应性，因为它是在启动寻找素数任务之前检查中断的，而不是在任务完成之后。</p>
+<p>当调用可中断的阻塞函数时，两种实用策略可用于处理InterruptedException：</p>
+<ul>
+<li>传递异常，从而使你的方法也称为可中断的阻塞方法。</li>
+<li>恢复中断状态，从而使调用栈中的上层代码能够对其进行处理。</li>
+</ul>
+<h2 id="使用Future实现取消">使用Future实现取消</h2>
+<p>Future拥有cancel方法可以取消任务，该方法具有一个boolean类型参数”mayInterrupteIfRunning”，如果为true并且任务正在某个线程中运行，那么这个线程可以被中断。如果这个参数为false,那么意味着“若任务还没有启动，就不要运行它”。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> timedRun(Runnable r, <span class="keyword">long</span> timeout, TimeUnit unit) </div><div class="line">					<span class="keyword">throws</span> InterruptedException{</div><div class="line">	Future&lt;?&gt; <span class="keyword">task</span> = taskExec.submit(r);</div><div class="line">	<span class="keyword">try</span>{</div><div class="line">		<span class="keyword">task</span>.get(timeout, unit);</div><div class="line">	}<span class="keyword">catch</span>(TimeoutException e){</div><div class="line">		<span class="comment">//接下来任务将被取消</span></div><div class="line">	}<span class="keyword">catch</span>(ExecutionException e){</div><div class="line">		<span class="comment">//如果在任务中抛出了异常，那么重新抛出该异常</span></div><div class="line">		<span class="keyword">throw</span> launderThrowable(e.getCause());</div><div class="line">	}<span class="keyword">finally</span>{</div><div class="line">		<span class="comment">//如果任务已经结束，那么执行取消操作也不会带来任何影响。</span></div><div class="line">		<span class="comment">//如果任务正在运行，那么将被中断。</span></div><div class="line">		<span class="keyword">task</span>.cancel(<span class="keyword">true</span>);</div><div class="line">	}</div><div class="line">						</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h2 id="采用ThreadPoolExecutor的newTaskFor封装非标准取消">采用ThreadPoolExecutor的newTaskFor封装非标准取消</h2>
+<p>当把一个Callable提交给ExecutorService时，submit方法会返回一个Future，我们可以通过这个Future来取消任务。newTaskFor是一个工厂方法，它将创建Future来代表任务。newTaskFor还能返回一个RunnableFuture接口，该接口扩展了Future和Runnable。</p>
+<p>通过定制表示任务的Future可以该表Future.cancle()行为，比如可以实现记录日志或者收集取消操作的统计信息。下面的代码介绍了通过newTaskFor将非标准的取消操作封装在一个任务中：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CancellableTask</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">Callable</span>&lt;<span class="title">T</span>&gt;</span>{</div><div class="line">	<span class="keyword">void</span> cancel();</div><div class="line">	RunnableFuture&lt;T&gt; newTask();</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CancellingExecutor</span> <span class="keyword">extends</span> <span class="title">ThreadPoolExecutor</span></span>{</div><div class="line">	<span class="keyword">protected</span>&lt;T&gt; RunnableFuture&lt;T&gt; <span class="title">newTaskFor</span>(Callable&lt;T&gt; callable){</div><div class="line">		<span class="keyword">if</span>(callable <span class="keyword">instanceof</span> CancellableTask){</div><div class="line">			<span class="keyword">return</span> ((CancellableTask&lt;T&gt;) callable).newTask();</div><div class="line">		}<span class="keyword">else</span>{</div><div class="line">			<span class="keyword">return</span> <span class="keyword">super</span>.newTaskFor(callable);</div><div class="line">		}</div><div class="line">	}</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">SocketUsingTask</span>&lt;<span class="title">T</span>&gt; <span class="keyword">implements</span> <span class="title">CancellableTask</span>&lt;<span class="title">T</span>&gt;</span>{</div><div class="line">	<span class="keyword">private</span> Socket socket;</div><div class="line">	</div><div class="line">	<span class="keyword">protected</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">setSocket</span>(Socket s){</div><div class="line">		<span class="keyword">this</span>.socket = s;</div><div class="line">	}</div><div class="line">	</div><div class="line">	<span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">cancel</span>(){</div><div class="line">		<span class="keyword">try</span>{</div><div class="line">			<span class="keyword">if</span>(socket != <span class="keyword">null</span>){</div><div class="line">				socket.close();</div><div class="line">			}</div><div class="line">		}<span class="keyword">catch</span>(IOException ignored){</div><div class="line">		}</div><div class="line">	}</div><div class="line">	</div><div class="line">	<span class="keyword">public</span> RunnableFuture&lt;T&gt; <span class="title">newTask</span>(){</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> FutureTask&lt;T&gt;(<span class="keyword">this</span>){</div><div class="line">			<span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">cancel</span>(<span class="keyword">boolean</span> mayInterruptIfRunning){</div><div class="line">				<span class="keyword">try</span>{</div><div class="line">					SocketUsingTask.<span class="keyword">this</span>.cancel():</div><div class="line">				}<span class="keyword">finally</span>{</div><div class="line">					<span class="keyword">return</span> <span class="keyword">super</span>.cancel(mayInterruptIfRunning);</div><div class="line">				}</div><div class="line">			}</div><div class="line">		}</div><div class="line">	}</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h2 id="使用ExecutorService">使用ExecutorService</h2>
+<p>可以使用ExecutorService的shutdown正常关闭和shutdownNow强行关闭。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LogService</span></span>{</div><div class="line">	<span class="keyword">private</span> <span class="keyword">final</span> ExecutorService exec = Executors.newSingleThreadExecutor();</div><div class="line">	</div><div class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span>(){}</div><div class="line">	</div><div class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stop</span>() <span class="keyword">throws</span> InterruptedException{</div><div class="line">		<span class="keyword">try</span>{</div><div class="line">			exec.shutdown();</div><div class="line">			exec.awaitTermination(TIMEOUT, UNIT);</div><div class="line">		}<span class="keyword">finally</span>{</div><div class="line">			writer.close();</div><div class="line">		}</div><div class="line">	}</div><div class="line">	</div><div class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title">log</span>(String msg){</div><div class="line">		<span class="keyword">try</span>{</div><div class="line">			exec.execute(<span class="keyword">new</span> WriteTask(msg));</div><div class="line">		}<span class="keyword">catch</span>(RejectedExecutionException ignored){</div><div class="line">		}</div><div class="line">	}</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h2 id="使用“毒丸”对象">使用“毒丸”对象</h2>
+<p>“毒丸”是指一个放在队列上的对象，当得到这个对象时，立即停止。生产者提交了这个对象以后，将不会提交任何对象。而消费者在得到这个对象时，停止消费。这种方式只有在生产者和消费者的数量都已知的情况下，才可以使用。</p>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/Java/">Java</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/Java/">Java</a>, <a href="/tags/多线程/">多线程</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+      <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+  <div class="ds-thread" data-thread-key="my-new-post/" data-title="抽象语法树" data-url="请替换成文章的网址"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+ <nav id="pagination" >
+    
+    
+    <a href="/2016/03/26/Unix的I-O模型与Java的I-O/" class="alignright next" >Next</a>
+    
+    <div class="clearfix"></div>
+</nav>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"whuroger"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.unstable.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:yoursite.com">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/Core-Java/">Core Java</a><small>0</small></li>
+  
+    <li><a href="/categories/Data-Structure/">Data Structure</a><small>1</small></li>
+  
+    <li><a href="/categories/Eclipse-Plugin-Development/">Eclipse Plugin Development</a><small>1</small></li>
+  
+    <li><a href="/categories/HTTP/">HTTP</a><small>1</small></li>
+  
+    <li><a href="/categories/JUC源码分析/">JUC源码分析</a><small>3</small></li>
+  
+    <li><a href="/categories/JUC源码解析/">JUC源码解析</a><small>1</small></li>
+  
+    <li><a href="/categories/Java/">Java</a><small>3</small></li>
+  
+    <li><a href="/categories/Java内存/">Java内存</a><small>1</small></li>
+  
+    <li><a href="/categories/java/">java</a><small>0</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">Tag Cloud</h3>
+  <div class="entry">
+    <a href="/tags/AST/" style="font-size: 13.33px;">AST</a><a href="/tags/Cache/" style="font-size: 13.33px;">Cache</a><a href="/tags/Eclipse-Plugin/" style="font-size: 13.33px;">Eclipse Plugin</a><a href="/tags/HTTP/" style="font-size: 13.33px;">HTTP</a><a href="/tags/HashMap/" style="font-size: 10.00px;">HashMap</a><a href="/tags/HashSet/" style="font-size: 10.00px;">HashSet</a><a href="/tags/JAVA/" style="font-size: 10.00px;">JAVA</a><a href="/tags/JUC/" style="font-size: 13.33px;">JUC</a><a href="/tags/Java/" style="font-size: 20.00px;">Java</a><a href="/tags/Java，JUC/" style="font-size: 13.33px;">Java，JUC</a><a href="/tags/Java，JUC，源码/" style="font-size: 16.67px;">Java，JUC，源码</a><a href="/tags/LRU/" style="font-size: 13.33px;">LRU</a><a href="/tags/Lock/" style="font-size: 13.33px;">Lock</a><a href="/tags/Unix/" style="font-size: 13.33px;">Unix</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/多线程/" style="font-size: 13.33px;">多线程</a>
+  </div>
+</div>
+
+
+  <div class="widget tag">
+<h3 class="title">友情链接</h3>
+<ul class="entry">
+<li><a href="http://zipperary.com/" title="Zippera's Blog">Zippera</a></li>
+</ul>
+</div>
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Jiao Long
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>
