@@ -1,0 +1,256 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>ThreadLocal详解 | 遥远的小村庄</title>
+  <meta name="author" content="Jiao Long">
+  
+  <meta name="description" content="Roger&#39;s blog | java | iOS | swift">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="ThreadLocal详解"/>
+  <meta property="og:site_name" content="遥远的小村庄"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="遥远的小村庄" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-56109842-1']);
+  
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+
+</head>
+
+
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">遥远的小村庄</a></h1>
+  <h2><a href="/">仰望星空，脚踏实地</a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">主页</a></li>
+    
+      <li><a href="/archives">归档</a></li>
+    
+      <li><a href="/about">关于</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div></header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-03-28T09:38:29.000Z"><a href="/2016/03/28/ThreadLocal详解/">3月 28 2016</a></time>
+      
+      
+  
+    <h1 class="title">ThreadLocal详解</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>ThreadLocal用于提供线程局部变量，即通过get()和set()方法访问某个变量的线程都有自己的局部变量。但它是通过各个线程自己创建对象，然后调用set方法设置进去，而不是由ThreadLocal自己来创建变量副本。</p>
+<h2 id="存储">存储</h2>
+<p>ThreadLocal作为线程局部变量，那么应该就存在Thread对象中，可以从Thread源码中找到线程局部变量存储的地方：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* ThreadLocal values pertaining to this thread. This map is maintained</span></div><div class="line">    * by the ThreadLocal class. */</div><div class="line">   ThreadLocal.ThreadLocalMap threadLocals = <span class="keyword">null</span>;</div><div class="line">   </div><div class="line">   <span class="javadoc">/**</span></div><div class="line">    * ThreadLocalMap is a customized hash map suitable only for</div><div class="line">    * maintaining thread local values. No operations are exported</div><div class="line">    * outside of the ThreadLocal class. The class is package private to</div><div class="line">    * allow declaration of fields in class Thread.  To help deal with</div><div class="line">    * very large and long-lived usages, the hash table entries use</div><div class="line">    * WeakReferences for keys. However, since reference queues are not</div><div class="line">    * used, stale entries are guaranteed to be removed only when</div><div class="line">    * the table starts running out of space.</div><div class="line">    */</div><div class="line">   static <span class="class"><span class="keyword">class</span> <span class="title">ThreadLocalMap</span></span>{</div><div class="line">    	<span class="javadoc">/**</span></div><div class="line">        * The entries in this hash map extend WeakReference, using</div><div class="line">        * its main ref field as the key (which is always a</div><div class="line">        * ThreadLocal object).  Note that null keys (i.e. entry.get()</div><div class="line">        * == null) mean that the key is no longer referenced, so the</div><div class="line">        * entry can be expunged from table.  Such entries are referred to</div><div class="line">        * as "stale entries" in the code that follows.</div><div class="line">        */</div><div class="line">       static <span class="class"><span class="keyword">class</span> <span class="title">Entry</span> <span class="keyword">extends</span> <span class="title">WeakReference</span>&lt;<span class="title">ThreadLocal</span>&lt;?&gt;&gt; </span>{</div><div class="line">           <span class="javadoc">/** The value associated with this ThreadLocal. */</span></div><div class="line">           Object value;</div><div class="line"></div><div class="line">           Entry(ThreadLocal&lt;?&gt; k, Object v) {</div><div class="line">               <span class="keyword">super</span>(k); <span class="comment">//将ThreadLocal对象转换为弱引用对象，作为key。</span></div><div class="line">               value = v;</div><div class="line">           }</div><div class="line">       }</div><div class="line">    }</div></pre></td></tr></table></figure>
+
+<p>可以看到ThreadLocal.ThreadLocalMap 是 ThreadLocal 的一个静态内部类,采用定制化的HashMap用来存储线程局部变量，放置于Entry类中，Entry类继承与WeakRefernce<threadlocal<?>&gt;。</threadlocal<?></p>
+<p>下面是ThreadLocalMap的构造函数：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="javadoc">/**</span></div><div class="line">      * Construct a new map initially containing (firstKey, firstValue).</div><div class="line">      * ThreadLocalMaps are constructed lazily, so we only create</div><div class="line">      * one when we have at least one entry to put in it.</div><div class="line">      */</div><div class="line">     ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) {</div><div class="line">         table = <span class="keyword">new</span> Entry[INITIAL_CAPACITY];</div><div class="line">         <span class="keyword">int</span> i = firstKey.threadLocalHashCode & (INITIAL_CAPACITY - <span class="number">1</span>);</div><div class="line">         table[i] = <span class="keyword">new</span> Entry(firstKey, firstValue);</div><div class="line">         size = <span class="number">1</span>;</div><div class="line">         setThreshold(INITIAL_CAPACITY);</div><div class="line">     }</div></pre></td></tr></table></figure>
+
+<p>可以看出ThreadLocalMap是采用一个INITIAL_CAPACITY大小的Entry数组保存ThreadLocao的key-value信息，并且索引是通过firstKey.threadLocalHashCode &amp; (INITIAL_CAPACITY - 1)来实现。</p>
+<h2 id="set方法">set方法</h2>
+<p>下面来看ThreadLocal的set方法：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span>(T <span class="keyword">value</span>) {</div><div class="line">        Thread t = Thread.currentThread();</div><div class="line">        ThreadLocalMap map = getMap(t);</div><div class="line">        <span class="keyword">if</span> (map != <span class="keyword">null</span>)</div><div class="line">            map.<span class="keyword">set</span>(<span class="keyword">this</span>, <span class="keyword">value</span>);</div><div class="line">        <span class="keyword">else</span></div><div class="line">            createMap(t, <span class="keyword">value</span>);</div><div class="line">    }</div><div class="line"></div><div class="line">ThreadLocalMap getMap(Thread t) {</div><div class="line">        <span class="keyword">return</span> t.threadLocals;</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">void</span> createMap(Thread t, T firstValue) {</div><div class="line">        t.threadLocals = <span class="keyword">new</span> ThreadLocalMap(<span class="keyword">this</span>, firstValue);</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">set</span>(ThreadLocal&lt;?&gt; key, Object <span class="keyword">value</span>) {</div></pre></td></tr></table></figure>
+
+<p>在往ThreadLocal里设置值得时候先拿到当前线程，接着去获得当前线程的ThreadLocalMap，如果为null，则进行初始化，这里采用了延迟初始化技术。否则就将threadlocal实例-value这种k-v键值对放入map。</p>
+<p>接下来查看ThreadLocalMap的set方法：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">set</span>(ThreadLocal&lt;?&gt; key, Object <span class="keyword">value</span>) {</div><div class="line">            Entry[] tab = table;</div><div class="line">            <span class="keyword">int</span> len = tab.length;</div><div class="line">            <span class="keyword">int</span> i = key.threadLocalHashCode & (len-<span class="number">1</span>);</div><div class="line"></div><div class="line">            <span class="keyword">for</span> (Entry e = tab[i];</div><div class="line">                 e != <span class="keyword">null</span>;</div><div class="line">                 e = tab[i = nextIndex(i, len)]) {</div><div class="line">                ThreadLocal&lt;?&gt; k = e.<span class="keyword">get</span>();</div><div class="line"></div><div class="line">                <span class="keyword">if</span> (k == key) {</div><div class="line">                    e.<span class="keyword">value</span> = <span class="keyword">value</span>;</div><div class="line">                    <span class="keyword">return</span>;</div><div class="line">                }</div><div class="line"></div><div class="line">                <span class="keyword">if</span> (k == <span class="keyword">null</span>) {</div><div class="line">                    replaceStaleEntry(key, <span class="keyword">value</span>, i);</div><div class="line">                    <span class="keyword">return</span>;</div><div class="line">                }</div><div class="line">            }</div><div class="line"></div><div class="line">            tab[i] = <span class="keyword">new</span> Entry(key, <span class="keyword">value</span>);</div><div class="line">            <span class="keyword">int</span> sz = ++size;</div><div class="line">            <span class="keyword">if</span> (!cleanSomeSlots(i, sz) && sz &gt;= threshold)</div><div class="line">                rehash();</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>一个线程中有多少个线程局部对象要保存，那么就初始化多少个 Entry 对象来保存。</p>
+<p>每一次在往ThreadLocalMap中添加值的时候都会进行扫描以及资源回收。每一次调用ThreadLocalMap的genEntry函数或者set函数，都可以进行内存回收，但是保证get和set函数一直被调用到是不可能任何情况都成立的，因此所以很多情况下需要使用者手动调用ThreadLocal的remove函数，手动删除不再需要的ThreadLocal，防止内存泄露。</p>
+<p>ThreadLocalMap 中 private Entry[] table 的初始大小是16，超过容量的2/3时，会进行rehash和扩容。</p>
+<h2 id="get方法">get方法</h2>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> T <span class="title">get</span>() {</div><div class="line">        Thread t = Thread.currentThread();</div><div class="line">        ThreadLocalMap map = getMap(t);</div><div class="line">        <span class="keyword">if</span> (map != <span class="keyword">null</span>) {</div><div class="line">            ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</div><div class="line">            <span class="keyword">if</span> (e != <span class="keyword">null</span>) {</div><div class="line">                @SuppressWarnings(<span class="string">"unchecked"</span>)</div><div class="line">                T result = (T)e.<span class="keyword">value</span>;</div><div class="line">                <span class="keyword">return</span> result;</div><div class="line">            }</div><div class="line">        }</div><div class="line">        <span class="keyword">return</span> setInitialValue();</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keyword">private</span> T <span class="title">setInitialValue</span>() {</div><div class="line">        T <span class="keyword">value</span> = initialValue();</div><div class="line">        Thread t = Thread.currentThread();</div><div class="line">        ThreadLocalMap map = getMap(t);</div><div class="line">        <span class="keyword">if</span> (map != <span class="keyword">null</span>)</div><div class="line">            map.<span class="keyword">set</span>(<span class="keyword">this</span>, <span class="keyword">value</span>);</div><div class="line">        <span class="keyword">else</span></div><div class="line">            createMap(t, <span class="keyword">value</span>);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">value</span>;</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>调用ThreadLocal的get方法时会先拿到当前线程，并根据当前线程拿到ThreadLocalMap变量，如果map不为空，通过当前threadlocal为key拿到对应的值，并返回。如果map为空，那么去设置初始化的值，这里需要通过复写initialValue()设置初值。如果没有override，会返回null，但是ThreadLocalMap还是进行了初始化。</p>
+<h2 id="总结">总结</h2>
+<ol>
+<li>每个Thread维护一个ThreadLocalMap映射表，这个映射表的key是ThreadLocal实例本身，value是真正需要存储的Object。这样设计之后每个Map的Entry数量变小了:之前是Thread的数量，现在是ThreadLocal的数量，能提高性能。并且当Thread销毁之后对应的ThreadLocalMap也就随之销毁了，能减少内存使用量。</li>
+<li>线程死亡时，线程局部变量会自动回收内存；</li>
+<li>线程局部变量时通过一个 Entry 保存在map中，该Entry 的key是一个 WeakReference包装的ThreadLocal, value为线程局部变量; key 到 value 的映射是通过：ThreadLocal.threadLocalHashCode &amp; (INITIAL_CAPACITY - 1) 来完成的；</li>
+<li>当线程拥有的局部变量超过了容量的2/3(没有扩大容量时是10个)，会涉及到ThreadLocalMap中Entry的回收；</li>
+</ol>
+<h2 id="参考">参考</h2>
+<ol>
+<li><a href="http://droidyue.com/blog/2016/03/13/learning-threadlocal-in-java/index.html" target="_blank" rel="external">http://droidyue.com/blog/2016/03/13/learning-threadlocal-in-java/index.html</a></li>
+<li><a href="http://zhuanlan.zhihu.com/winwill2012/20213204" target="_blank" rel="external">http://zhuanlan.zhihu.com/winwill2012/20213204</a></li>
+</ol>
+
+      
+    </div>
+    <footer>
+      
+        
+  
+  <div class="categories">
+    <a href="/categories/JUC源码解析/">JUC源码解析</a>
+  </div>
+
+        
+  
+  <div class="tags">
+    <a href="/tags/JUC/">JUC</a>, <a href="/tags/Java/">Java</a>, <a href="/tags/ThreadLocal/">ThreadLocal</a>
+  </div>
+
+        
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+      <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+  <div class="ds-thread" data-thread-key="my-new-post/" data-title="抽象语法树" data-url="请替换成文章的网址"></div>
+<!-- 多说评论框 end -->
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+ <nav id="pagination" >
+    
+    
+    <a href="/2016/03/28/Java线程的终止/" class="alignright next" >Next</a>
+    
+    <div class="clearfix"></div>
+</nav>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"whuroger"};
+  (function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.unstable.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0] 
+     || document.getElementsByTagName('body')[0]).appendChild(ds);
+  })();
+  </script>
+
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:yoursite.com">
+  </form>
+</div>
+
+  
+<div class="widget tag">
+  <h3 class="title">Categories</h3>
+  <ul class="entry">
+  
+    <li><a href="/categories/Core-Java/">Core Java</a><small>0</small></li>
+  
+    <li><a href="/categories/Data-Structure/">Data Structure</a><small>1</small></li>
+  
+    <li><a href="/categories/Eclipse-Plugin-Development/">Eclipse Plugin Development</a><small>1</small></li>
+  
+    <li><a href="/categories/HTTP/">HTTP</a><small>1</small></li>
+  
+    <li><a href="/categories/JUC源码分析/">JUC源码分析</a><small>3</small></li>
+  
+    <li><a href="/categories/JUC源码解析/">JUC源码解析</a><small>2</small></li>
+  
+    <li><a href="/categories/Java/">Java</a><small>3</small></li>
+  
+    <li><a href="/categories/Java内存/">Java内存</a><small>1</small></li>
+  
+    <li><a href="/categories/java/">java</a><small>0</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tagcloud">
+  <h3 class="title">Tag Cloud</h3>
+  <div class="entry">
+    <a href="/tags/AST/" style="font-size: 13.33px;">AST</a><a href="/tags/Cache/" style="font-size: 13.33px;">Cache</a><a href="/tags/Eclipse-Plugin/" style="font-size: 13.33px;">Eclipse Plugin</a><a href="/tags/HTTP/" style="font-size: 13.33px;">HTTP</a><a href="/tags/HashMap/" style="font-size: 10.00px;">HashMap</a><a href="/tags/HashSet/" style="font-size: 10.00px;">HashSet</a><a href="/tags/JAVA/" style="font-size: 10.00px;">JAVA</a><a href="/tags/JUC/" style="font-size: 16.67px;">JUC</a><a href="/tags/Java/" style="font-size: 20.00px;">Java</a><a href="/tags/Java，JUC/" style="font-size: 13.33px;">Java，JUC</a><a href="/tags/Java，JUC，源码/" style="font-size: 16.67px;">Java，JUC，源码</a><a href="/tags/LRU/" style="font-size: 13.33px;">LRU</a><a href="/tags/Lock/" style="font-size: 13.33px;">Lock</a><a href="/tags/ThreadLocal/" style="font-size: 13.33px;">ThreadLocal</a><a href="/tags/Unix/" style="font-size: 13.33px;">Unix</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/多线程/" style="font-size: 13.33px;">多线程</a>
+  </div>
+</div>
+
+
+  <div class="widget tag">
+<h3 class="title">友情链接</h3>
+<ul class="entry">
+<li><a href="http://zipperary.com/" title="Zippera's Blog">Zippera</a></li>
+</ul>
+</div>
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 Jiao Long
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+</body>
+</html>
