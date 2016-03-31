@@ -66,6 +66,48 @@
     <header>
       
         <div class="icon"></div>
+        <time datetime="2016-03-31T13:25:34.000Z"><a href="/2016/03/31/选择排序/">3月 31 2016</a></time>
+      
+      
+  
+    <h1 class="title"><a href="/2016/03/31/选择排序/">选择排序</a></h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <h2 id="介绍">介绍</h2>
+<p>选择排序首先在未排序的数列中找到最小(or最大)元素，然后将其存放到数列的起始位置；接着，再从剩余未排序的元素中继续寻找最小(or最大)元素，然后放到数列的第二位置。以此类推，直到所有元素均排序完毕。</p>
+<h2 id="时间复杂度和稳定性">时间复杂度和稳定性</h2>
+<h3 id="时间复杂度">时间复杂度</h3>
+<p>假设数列大小为N，进行一次遍历需要O(N)的时间，一共需要遍历N-1次，因此选择排序时间复杂度为O(N^2)。</p>
+<h3 id="稳定性">稳定性</h3>
+<p>选择排序是稳定的。</p>
+<h2 id="实现">实现</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sort</span>(<span class="keyword">int</span>[] a) {</div><div class="line"></div><div class="line">    <span class="keyword">int</span> length = a.length;</div><div class="line"></div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i =<span class="number">0</span> ;i &lt; length;i++){</div><div class="line">        <span class="keyword">int</span> min = i;</div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = i+<span class="number">1</span>; j &lt; length; j++){</div><div class="line">            <span class="keyword">if</span>(a[j] &lt; a[min]){</div><div class="line">                min = j;</div><div class="line">            }</div><div class="line">        }</div><div class="line">        swap(a, i, min);</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer>
+      
+        
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+
+
+
+
+  <article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
         <time datetime="2016-03-31T12:56:16.000Z"><a href="/2016/03/31/冒泡排序/">3月 31 2016</a></time>
       
       
@@ -577,43 +619,6 @@
 
 
 
-  <article class="post">
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2016-03-21T17:03:19.000Z"><a href="/2016/03/22/JUC源码解析-基于JDK1-8/">3月 22 2016</a></time>
-      
-      
-  
-    <h1 class="title"><a href="/2016/03/22/JUC源码解析-基于JDK1-8/">JUC源码解析-基于JDK1.8</a></h1>
-  
-
-    </header>
-    <div class="entry">
-      
-        <p>一直都想写点什么，也算是对自己工作学习的记录与反思，也算是为了未来心仪工作的一点准备，却又一直不知道写点什么。</p>
-<p>最近一直在看JDK的源码，发现网上大部分的都是基于1.5或者1.6，Oracle已经正式发布JDK1.8，因此决定基于1.8版本来写点JDK源码分析，包括Collection相关类和JUC包。</p>
-<p>本文是关于JUC源码解析的目录：</p>
-<p><a href="http://whujl.github.io/2016/03/22/ReentrantLock%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" target="_blank" rel="external">1. ReentrantLock源码解析</a></p>
-<p>未完待续…</p>
-
-      
-    </div>
-    <footer>
-      
-        
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-
-
-
 
 <nav id="pagination">
   
@@ -653,7 +658,7 @@
   
     <li><a href="/categories/java/">java</a><small>0</small></li>
   
-    <li><a href="/categories/数据结构与算法/">数据结构与算法</a><small>1</small></li>
+    <li><a href="/categories/数据结构与算法/">数据结构与算法</a><small>2</small></li>
   
   </ul>
 </div>
@@ -663,7 +668,7 @@
 <div class="widget tagcloud">
   <h3 class="title">Tag Cloud</h3>
   <div class="entry">
-    <a href="/tags/AST/" style="font-size: 13.33px;">AST</a><a href="/tags/Cache/" style="font-size: 13.33px;">Cache</a><a href="/tags/Eclipse-Plugin/" style="font-size: 13.33px;">Eclipse Plugin</a><a href="/tags/HTTP/" style="font-size: 13.33px;">HTTP</a><a href="/tags/HashMap/" style="font-size: 10.00px;">HashMap</a><a href="/tags/HashSet/" style="font-size: 10.00px;">HashSet</a><a href="/tags/JAVA/" style="font-size: 10.00px;">JAVA</a><a href="/tags/JUC/" style="font-size: 16.67px;">JUC</a><a href="/tags/Java/" style="font-size: 20.00px;">Java</a><a href="/tags/Java，JUC/" style="font-size: 13.33px;">Java，JUC</a><a href="/tags/Java，JUC，源码/" style="font-size: 16.67px;">Java，JUC，源码</a><a href="/tags/LRU/" style="font-size: 13.33px;">LRU</a><a href="/tags/Lock/" style="font-size: 13.33px;">Lock</a><a href="/tags/ThreadLocal/" style="font-size: 13.33px;">ThreadLocal</a><a href="/tags/Unix/" style="font-size: 13.33px;">Unix</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/多线程/" style="font-size: 13.33px;">多线程</a><a href="/tags/排序/" style="font-size: 13.33px;">排序</a>
+    <a href="/tags/AST/" style="font-size: 13.33px;">AST</a><a href="/tags/Cache/" style="font-size: 13.33px;">Cache</a><a href="/tags/Eclipse-Plugin/" style="font-size: 13.33px;">Eclipse Plugin</a><a href="/tags/HTTP/" style="font-size: 13.33px;">HTTP</a><a href="/tags/HashMap/" style="font-size: 10.00px;">HashMap</a><a href="/tags/HashSet/" style="font-size: 10.00px;">HashSet</a><a href="/tags/JAVA/" style="font-size: 10.00px;">JAVA</a><a href="/tags/JUC/" style="font-size: 16.67px;">JUC</a><a href="/tags/Java/" style="font-size: 20.00px;">Java</a><a href="/tags/Java，JUC/" style="font-size: 13.33px;">Java，JUC</a><a href="/tags/Java，JUC，源码/" style="font-size: 16.67px;">Java，JUC，源码</a><a href="/tags/LRU/" style="font-size: 13.33px;">LRU</a><a href="/tags/Lock/" style="font-size: 13.33px;">Lock</a><a href="/tags/ThreadLocal/" style="font-size: 13.33px;">ThreadLocal</a><a href="/tags/Unix/" style="font-size: 13.33px;">Unix</a><a href="/tags/java/" style="font-size: 10.00px;">java</a><a href="/tags/多线程/" style="font-size: 13.33px;">多线程</a><a href="/tags/排序/" style="font-size: 16.67px;">排序</a>
   </div>
 </div>
 
