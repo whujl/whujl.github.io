@@ -4,7 +4,7 @@
   <subtitle><![CDATA[仰望星空，脚踏实地]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://yoursite.com/"/>
-  <updated>2016-03-28T13:53:13.837Z</updated>
+  <updated>2016-03-31T13:21:19.655Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -13,6 +13,55 @@
   </author>
   
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[冒泡排序]]></title>
+    <link href="http://yoursite.com/2016/03/31/%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F/"/>
+    <id>http://yoursite.com/2016/03/31/冒泡排序/</id>
+    <published>2016-03-31T12:56:16.000Z</published>
+    <updated>2016-03-31T13:21:07.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="介绍">介绍</h2>
+<p>设数组长度为N,从小向大排序:</p>
+<ol>
+<li><p>比较相邻的前后两个数据，如果前面数据大于后面的数据，就将两个数据交换。</p>
+</li>
+<li><p>这样对数组的第0个数据到N-1个数据进行一次遍历后，最大的一个数据就“沉”到数组第N-1个位置。</p>
+</li>
+<li><p>N=N-1，如果N不为0就重复前面二步，否则排序完成。</p>
+</li>
+</ol>
+<h2 id="时间复杂度和稳定性">时间复杂度和稳定性</h2>
+<h3 id="时间复杂度">时间复杂度</h3>
+<p>冒泡排序的时间复杂度是O(N^2)，假设数组中有N个元素，遍历一趟的时间复杂度是O(N),需要遍历N-1次，因此时间复杂度为O(N^2)。</p>
+<h3 id="稳定性">稳定性</h3>
+<p>冒泡排序是稳定的排序，如果前后两个元素相等，不会交换前后顺序。</p>
+<h2 id="实现">实现</h2>
+<h3 id="基本实现">基本实现</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sort</span>(<span class="keyword">int</span>[] a) {</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; a.length; i++) {</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">1</span>; j &lt; a.length - i; j++) {</div><div class="line">            <span class="keyword">if</span> (a[j - <span class="number">1</span>] &gt; a[j]) {</div><div class="line">                swap(a, j, j - <span class="number">1</span>);</div><div class="line">            }</div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h3 id="优化一：如果没有发生交换则停止排序">优化一：如果没有发生交换则停止排序</h3>
+<p>设置一个flag表示这趟是否发生交换，如果交换则为true， 否则为false。这样如果一趟没有发生交换，则说明排序完成。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sort</span>(<span class="keyword">int</span>[] a){</div><div class="line">    <span class="keyword">int</span> n = a.length;</div><div class="line">    <span class="keyword">boolean</span> flag = <span class="keyword">true</span>;</div><div class="line"></div><div class="line">    <span class="keyword">while</span>(flag){</div><div class="line">        flag = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span> ; i&lt; n; i++){</div><div class="line">            <span class="keyword">if</span>(a[i-<span class="number">1</span>] &gt; a[i]){</div><div class="line">                swap(a, i, i-<span class="number">1</span>);</div><div class="line">                flag = <span class="keyword">true</span>;</div><div class="line">            }</div><div class="line">        }</div><div class="line"></div><div class="line">        n--;</div><div class="line">    }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<h3 id="优化二:_对于只有前面部分无序数组优化">优化二: 对于只有前面部分无序数组优化</h3>
+<p>如果对于一个很大的数组，只有前面部分是无序状态，后面都已经有序，那么在一次遍历以后，只需要记录下这个位置，下次遍历只需要遍历前面这部分无序数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sort</span>(<span class="keyword">int</span>[] a) {</div><div class="line">       <span class="keyword">int</span> flag = a.length;</div><div class="line"></div><div class="line">       <span class="keyword">while</span> (flag &gt; <span class="number">0</span>) {</div><div class="line">           <span class="keyword">int</span> k = flag;</div><div class="line">           flag = <span class="number">0</span>;</div><div class="line"></div><div class="line">           <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">1</span>; j &lt; k; j++) {</div><div class="line">               <span class="keyword">if</span> (a[j - <span class="number">1</span>] &gt; a[j]) {</div><div class="line">                   swap(a, j, j - <span class="number">1</span>);</div><div class="line">                   flag = j;</div><div class="line">               }</div><div class="line">           }</div><div class="line">       }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="介绍">介绍</h2>
+<p>设数组长度为N,从小向大排序:</p>
+<ol>
+<li><p>比较相邻的前后两个数据，如果前面数据大于后面的数据，就将两个数据交换。</p>
+</li>
+<li><p>这样对数组的第0个数据到N-1个数据进行一次遍历后，最大的一个数]]>
+    </summary>
+    
+      <category term="排序" scheme="http://yoursite.com/tags/%E6%8E%92%E5%BA%8F/"/>
+    
+      <category term="数据结构与算法" scheme="http://yoursite.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[ThreadLocal详解]]></title>

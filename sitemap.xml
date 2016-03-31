@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://yoursite.com/2016/03/31/%E5%86%92%E6%B3%A1%E6%8E%92%E5%BA%8F/</loc>
+    <lastmod>2016-03-31T13:21:07.000Z</lastmod>
+  </url>
+  
+  <url>
     <loc>http://yoursite.com/2016/03/28/ThreadLocal%E8%AF%A6%E8%A7%A3/</loc>
     <lastmod>2016-03-28T13:53:02.000Z</lastmod>
   </url>
